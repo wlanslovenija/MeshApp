@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MeshApp (Test)</string>
+    <string name="local_service_started">OLSR daemon has started</string>
+    <string name="local_service_stopped">OLSR daemon has stopped</string>
+    <string name="local_service_label">OLSR Service</string>
+
+    <string name="activity_local_service_controller">OLSR Service Controller</string>
+    <string name="local_service_controller">In this manner we start and stop OLSR daemon as we please.</string>
+    <string name="start_service">Start OLSR Daemon</string>
+    <string name="stop_service">Stop OLSR Daemon</string>
+
+    <string name="activity_local_service_binding">OLSR Service Binding</string>
+    <string name="local_service_binding">We can automatically connect to the OLSR daemon with simply pushing a button!</string>
+    <string name="bind_service">Bind OLSR</string>
+    <string name="unbind_service">Unbind OLSR</string>
+    <string name="local_service_connected">Connected to OLSR daemon, process running locally.</string>
+    <string name="local_service_disconnected">Disconnected from OLSR daemon, process no longer running.</string>
+</resources>
