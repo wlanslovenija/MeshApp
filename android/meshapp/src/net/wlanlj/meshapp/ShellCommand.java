@@ -1,4 +1,26 @@
+/**
+ * 
+ * Written by charles on July 2, 2010
+ * Last modified by charles on July 4, 2010
+ *
+ * Adapted to run shell commands for MeshApp from m900 WiFi Tether App.
+ * Thanks to Kevin@TeslaCoil and LouZiffer@SDX.
+ *
+ * Example usage (use cmd.su.runWaitFor instead of cmd.sh.runWaitFor to run as su):
+ *
+ * ShellCommand cmd = new ShellCommand();
+ * CommandResult r = cmd.sh.runWaitFor("/system/bin/getprop wifi.interface");
+ *
+ * if (!r.success()) {
+ *     Log.d(MSG_TAG, "Error " + r.stderr);
+ * } else {
+ *     Log.d(MSG_TAG, "Successfully executed getprop wifi.interface. Result: " + r.stdout);
+ *     this.tetherNetworkDevice = (r.stdout);
+ * }
+ */
+
 package net.wlanlj.meshapp;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
@@ -6,66 +28,68 @@ import java.io.InputStream;
 import android.util.Log;
 
 public class ShellCommand {
+
     private static final String MSG_TAG = "[[MeshApp]]::[ShellCommand] -> ";
-    private Boolean hasRoot;    
-    
-    public Shell sh;
-    public Shell su;
+    private Boolean can_su;    
+
+    public SH sh;
+    public SH su;
     
     public ShellCommand() {
-        sh = new Shell("sh");
-        su = new Shell("su");
+        sh = new SH("sh");
+        su = new SH("su");
     }
     
-    public boolean hasRoot() {
-        return hasRoot(false);
+    public boolean canSU() {
+        return canSU(false);
     }
     
-    public boolean hasRoot(boolean force) {
-        if (hasRoot == null || force) {
-            CommandResult result = su.runWaitFor("id");
+    public boolean canSU(boolean force_check) {
+        if (can_su == null || force_check) {
+            CommandResult r = su.runWaitFor("id");
             StringBuilder out = new StringBuilder();
             
-            if (result.stdout != null)
-                out.append(result.stdout).append(" ; ");
-            if (result.stderr != null)
-                out.append(result.stderr);
+            if (r.stdout != null)
+                out.append(r.stdout).append(" ; ");
+            if (r.stderr != null)
+                out.append(r.stderr);
             
-            Log.i(MSG_TAG, "call to hasRoot():: su[" + result.exitValue + "]: " + out);
-            hasRoot = result.success();
+            Log.v(MSG_TAG, "canSU() su[" + r.exit_value + "]: " + out);
+            can_su = r.success();
         }
-        return hasRoot;
+        return can_su;
     }
 
-    public Shell getShell() {
-        return hasRoot() ? su : sh;
+    public SH suOrSH() {
+        return canSU() ? su : sh;
     }
     
     public class CommandResult {
         public final String stdout;
         public final String stderr;
-        public final Integer exitValue;
+        public final Integer exit_value;
         
-        CommandResult(Integer exitValueIn, String stdoutIn, String stderrIn) {
-            exitValue = exitValueIn;
-            stdout = stdoutIn;
-            stderr = stderrIn;
+        CommandResult(Integer exit_value_in, String stdout_in, String stderr_in)
+        {
+            exit_value = exit_value_in;
+            stdout = stdout_in;
+            stderr = stderr_in;
         }
         
-        CommandResult(Integer exitValueIn) {
-            this(exitValueIn, null, null);
+        CommandResult(Integer exit_value_in) {
+            this(exit_value_in, null, null);
         }
         
         public boolean success() {
-            return exitValue != null && exitValue == 0;
+            return exit_value != null && exit_value == 0;
         }
     }
 
-    public class Shell {
+    public class SH {
         private String SHELL = "sh";
 
-        public Shell(String shell) {
-            SHELL = shell;
+        public SH(String SHELL_in) {
+            SHELL = SHELL_in;
         }
 
         public Process run(String s) {
@@ -76,24 +100,24 @@ public class ShellCommand {
                 toProcess.writeBytes("exec " + s + "\n");
                 toProcess.flush();
             } catch(Exception e) {
-                Log.e(MSG_TAG, "Exception thrown while trying to run: '" + s + "' " + e.getMessage());
+                Log.e(MSG_TAG, "Exception while trying to run: '" + s + "' " + e.getMessage());
                 process = null;
             }
             return process;
         }
         
-        private String getStreamLines(InputStream in) {
+        private String getStreamLines(InputStream is) {
             String out = null;
             StringBuffer buffer = null;
-            DataInputStream data = new DataInputStream(in);
+            DataInputStream dis = new DataInputStream(is);
 
             try {
-                if (data.available() > 0) { 
-                    buffer = new StringBuffer(data.readLine());
-                    while(data.available() > 0)
-                        buffer.append("\n").append(data.readLine());
+                if (dis.available() > 0) { 
+                    buffer = new StringBuffer(dis.readLine());
+                    while(dis.available() > 0)
+                        buffer.append("\n").append(dis.readLine());
                 }
-                data.close();
+                dis.close();
             } catch (Exception ex) {
                 Log.e(MSG_TAG, ex.getMessage());
             }
@@ -102,25 +126,24 @@ public class ShellCommand {
             return out;
         }
 
-        public CommandResult runWaitFor(String cmd) {
-            Process process = run(cmd);
-            Integer exitValue = null;
+        public CommandResult runWaitFor(String s) {
+            Process process = run(s);
+            Integer exit_value = null;
             String stdout = null;
             String stderr = null;
             if (process != null) {
                 try {
-                    exitValue = process.waitFor();
-                    
+                    exit_value = process.waitFor(); 
                     stdout = getStreamLines(process.getInputStream());
                     stderr = getStreamLines(process.getErrorStream());
                     
-                } catch(InterruptedException ex) {
-                    Log.e(MSG_TAG, "runWaitFor " + ex.toString());
-                } catch(NullPointerException ex) {
-                    Log.e(MSG_TAG, "runWaitFor " + ex.toString());
+                } catch(InterruptedException e) {
+                    Log.e(MSG_TAG, "runWaitFor " + e.toString());
+                } catch(NullPointerException e) {
+                    Log.e(MSG_TAG, "runWaitFor " + e.toString());
                 }
             }
-            return new CommandResult(exitValue, stdout, stderr);
+            return new CommandResult(exit_value, stdout, stderr);
         }
     }
 }

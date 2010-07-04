@@ -1,10 +1,11 @@
 /**
  * Written by charles on June 28, 2010. 
- * Last modified by charles on June 30, 2010.
+ * Last modified by charles on July 4, 2010.
  */
 
 
 package net.wlanlj.meshapp;
+
 import android.R.drawable;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -16,8 +17,16 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.util.Log;
 import android.widget.Toast;
+import java.lang.Exception;
+import java.lang.Process;
+import java.lang.Runtime;
+import java.io.IOException;
+import java.io.DataOutputStream;
+
 import net.wlanlj.meshapp.ShellCommand;
+import net.wlanlj.meshapp.ShellCommand.SH;
 import net.wlanlj.meshapp.ShellCommand.CommandResult;
+
 
 
 public class OlsrService extends Service {    
@@ -28,11 +37,9 @@ public class OlsrService extends Service {
     // The notification manager.
     private NotificationManager olsrNotifyManager;
 
-    // Instance of binding class for olsrd.
+    // Binder to launch/kill olsrd on button events.
     private final IBinder olsrBinder = new OlsrBinder();
 
-    // Run OLSR daemon through a ShellCommand instance.
-    private ShellCommand olsrd = new ShellCommand();
 
     /**
      * Subclass accessible to client. OLSR daemon will run as part of the process which calls it.
@@ -50,11 +57,13 @@ public class OlsrService extends Service {
 	olsrNotifyManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	showNotification();
 	Log.i(MSG_TAG, "Call to onCreate()");
-	CommandResult result = olsrd.sh.runWaitFor("echo olsr");
+	Log.i(MSG_TAG, "Attempting to run olsrd...");
+	ShellCommand olsrd = new ShellCommand();
+	CommandResult result = olsrd.sh.runWaitFor("/system/bin/su olsrd");
 	if(!result.success()) {
-	    Log.d(MSG_TAG, "Error! " + result.stderr);
+	    Log.d(MSG_TAG, "Error! Failed to run olsrd. " + result.stderr);
 	} else {
-	    Log.i(MSG_TAG, "Success! " + result.stdout);
+	    Log.d(MSG_TAG, "Successfully ran olsrd! Result: " + result.stdout);
 	}
     }
 
@@ -85,3 +94,5 @@ public class OlsrService extends Service {
         olsrNotifyManager.notify(R.string.local_service_started, notification);
     }
 }
+
+    
