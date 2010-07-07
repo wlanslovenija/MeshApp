@@ -12,19 +12,21 @@ import android.widget.Button;
 import android.widget.Toast;
 
     /**
-     * This is the controller class for OlsrService.
-     * Also this is the default activity for MeshApp.
+     * A simple class which controls the OLSR Daemon.
      */
 
 public class MainActivity extends Activity {
    
     /** Useful for debugging. */
     public static final String MSG_TAG = "[[MeshApp]]::[MainActivity] -> ";
-    
+
+    OlsrNative olsrNative = new OlsrNative();
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.olsr_service_controller);
+        setContentView(R.layout.olsr_main);
 	Log.i(MSG_TAG, "Call to onCreate()");
 
 	// Prepare for button clicks.
@@ -36,19 +38,23 @@ public class MainActivity extends Activity {
 
     private OnClickListener olsrStartListener = new OnClickListener() {
 	    public void onClick(View v) {
-		startService(new Intent(MainActivity.this,
-					OlsrService.class));
-		Log.i(MSG_TAG, "olsrStartListener::onClick()");
-		Log.i(MSG_TAG, "Starting olsrd...");
+		Log.i(MSG_TAG, "olsrStartListener activated");
+		Log.d(MSG_TAG, "Attempting to start olsrd...");
+		if(olsrNative.startOlsr("start") == 0) 
+		    Log.i(MSG_TAG, "Call to startOlsr() successful!");
+		else
+		    Log.d(MSG_TAG, "Call to startOlsr() failed...");
 	    }
 	};
     
     private OnClickListener olsrStopListener = new OnClickListener() {
 	    public void onClick(View v) {
-		stopService(new Intent(MainActivity.this,
-				       OlsrService.class));
-		Log.i(MSG_TAG, "olsrStopListener::onClick()");
-		Log.i(MSG_TAG, "Stopping olsrd...");
+		Log.i(MSG_TAG, "olsrStopListener activated");
+		Log.i(MSG_TAG, "Attempting to stop olsrd...");
+		if(olsrNative.stopOlsr("stop") == 1)
+		    Log.i(MSG_TAG, "Call to stopOlsr() successful!");
+		else
+		    Log.d(MSG_TAG, "Call to stopOlsR() failed...");
 	    }
 	};
 }    
