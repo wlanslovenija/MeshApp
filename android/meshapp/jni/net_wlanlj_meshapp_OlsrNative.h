@@ -9,19 +9,20 @@ extern "C" {
 #endif
 /*
  * Class:     net_wlanlj_meshapp_OlsrNative
- * Method:    startOlsr
- * Signature: (Ljava/lang/String;)I
+ * Method:    start
+ * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_OlsrNative_startOlsr
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_OlsrNative_start
+  (JNIEnv *, jobject);
+
 
 /*
  * Class:     net_wlanlj_meshapp_OlsrNative
- * Method:    stopOlsr
- * Signature: (Ljava/lang/String;)I
+ * Method:    stop
+ * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_OlsrNative_stopOlsr
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_OlsrNative_stop
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

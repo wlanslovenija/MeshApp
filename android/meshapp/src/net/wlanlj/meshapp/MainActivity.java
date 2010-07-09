@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
     /** Useful for debugging. */
     public static final String MSG_TAG = "[[MeshApp]]::[MainActivity] -> ";
 
-    OlsrNative olsrNative = new OlsrNative();
+    OlsrNative olsrd = new OlsrNative();
 
 
     @Override
@@ -40,10 +40,10 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStartListener activated");
 		Log.d(MSG_TAG, "Attempting to start olsrd...");
-		if(olsrNative.startOlsr("start") == 0) 
-		    Log.i(MSG_TAG, "Call to startOlsr() successful!");
+		if(olsrd.start() == 0) 
+		    Log.i(MSG_TAG, "olsrd.start() successful!");
 		else
-		    Log.d(MSG_TAG, "Call to startOlsr() failed...");
+		    Log.d(MSG_TAG, "olsrd.start() failed...");
 	    }
 	};
     
@@ -51,10 +51,10 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStopListener activated");
 		Log.i(MSG_TAG, "Attempting to stop olsrd...");
-		if(olsrNative.stopOlsr("stop") == 1)
-		    Log.i(MSG_TAG, "Call to stopOlsr() successful!");
+		if(olsrd.stop() == 0)
+		    Log.i(MSG_TAG, "olsrd.stop() successful!");
 		else
-		    Log.d(MSG_TAG, "Call to stopOlsR() failed...");
+		    Log.d(MSG_TAG, "olsrd.stop() failed...");
 	    }
 	};
 }    

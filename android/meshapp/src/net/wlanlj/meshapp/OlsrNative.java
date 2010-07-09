@@ -16,7 +16,7 @@ class OlsrNative {
 	}
     }
 
-    public native int startOlsr(String startCommand);
+    public native int start();
     
-    public native int stopOlsr(String stopCommand);
+    public native int stop();
 }
