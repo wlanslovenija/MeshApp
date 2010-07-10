@@ -11,17 +11,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-    /**
-     * A simple class which controls the OLSR Daemon.
-     */
+/**
+ * A simple class which controls the OLSR Daemon.
+ */
 
 public class MainActivity extends Activity {
    
     /** Useful for debugging. */
     public static final String MSG_TAG = "[[MeshApp]]::[MainActivity] -> ";
-
-    OlsrNative olsrd = new OlsrNative();
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,21 +37,28 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStartListener activated");
 		Log.d(MSG_TAG, "Attempting to start olsrd...");
-		if(olsrd.start() == 0) 
-		    Log.i(MSG_TAG, "olsrd.start() successful!");
-		else
-		    Log.d(MSG_TAG, "olsrd.start() failed...");
+		if (runRootCommand("olsrd") == true) {
+		    Log.i(MSG_TAG, "OLSR Daemon has started successfully!");
+		} else {
+		    Log.d(MSG_TAG, "Unable to start OLSR Daemon.");
+		}
 	    }
-	};
-    
+	};   
     private OnClickListener olsrStopListener = new OnClickListener() {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStopListener activated");
 		Log.i(MSG_TAG, "Attempting to stop olsrd...");
-		if(olsrd.stop() == 0)
-		    Log.i(MSG_TAG, "olsrd.stop() successful!");
-		else
-		    Log.d(MSG_TAG, "olsrd.stop() failed...");
 	    }
 	};
-}    
+    
+    public boolean runRootCommand(String command) {
+	Log.d(MSG_TAG, "Running command as root ==> su -c \""+command+"\"");
+	int exit = OlsrNative.runCommand("su -c \""+command+"\"");
+	if (exit == 0) {
+	    return true;
+	} else {
+	    Log.d(MSG_TAG, "Failed to run command "+command+"as root: returns "+exit);
+	    return false;
+	}
+    }
+}
