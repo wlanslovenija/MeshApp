@@ -1,26 +1,72 @@
-.PHONY: all olsrd clean_olsrd guilib clean_guilib meshapp clean_meshapp clean
+.PHONY: all clean
 
 all: olsrd guilib meshapp
 
-olsrd: android/meshapp/res/raw/olsrd
+clean: clean_olsrd clean_guilib clean_meshapp
 
-android/meshapp/res/raw/olsrd: olsr/olsrd/olsrd
-	cp olsr/olsrd/olsrd android/meshapp/res/raw/olsrd
+##
+# OLSRD
+##
+
+.PHONY: olsrd clean_olsrd
+
+olsrd: android/meshapp/res/raw/olsrd
 
 olsr/olsrd/olsrd:
 	make -C olsr/olsrd
+
+android/meshapp/res/raw/olsrd: olsr/olsrd/olsrd
+	cp olsr/olsrd/olsrd android/meshapp/res/raw/olsrd
 
 clean_olsrd:
 	make -C olsr/olsrd uberclean
 	rm -f olsr/olsrd/olsrd olsr/olsrd/olsrd/android/meshapp/res/raw/olsrd
 
-guilib: android/meshapp/libs/libguilib.so
+##
+# GUIlib - Common
+##
 
-android/meshapp/libs/libguilib.so:
-	$(NDK)/ndk-build -C android/meshapp
+.PHONY: guilib clean_guilib
 
-clean_guilib:
+guilib: guilib_static guilib_shared
+
+clean_guilib: clean_guilib_static clean_guilib_shared
+
+##
+# GUIlib - Static
+##
+
+.PHONY: guilib_static clean_guilib_static
+
+guilib_static: android/meshapp/bin/ndk/local/armeabi/libguilib.a
+
+android/meshapp/bin/ndk/local/armeabi/libguilib.a: guilib/libs/libguilib.a
+	cp guilib/libs/libguilib.a android/meshapp/bin/ndk/local/armeabi/libguilib.a
+
+guilib/libs/libguilib.a: 
+	make -C guilib all
+
+clean_guilib_static:
+	make -C guilib clean
+	rm -f android/meshapp/bin/ndk/local/armeabi/libguilib.a
+
+##
+# GUIlib - Shared
+##
+
+.PHONY: guilib_shared clean_guilib_shared
+
+guilib_shared: android/meshapp/libs/libguilib.so
+
+android/meshapp/libs/libguilib.so: guilib_static
+	$(NDK)/ndk-build V=1 -C android/meshapp
+
+clean_guilib_shared:
 	rm -f android/meshapp/libs/armeabi/libguilib.so
+
+##
+# MeshApp
+##
 
 meshapp: MeshApp.apk
 
@@ -33,4 +79,6 @@ android/meshapp/bin/MeshApp-debug.apk:
 clean_meshapp:
 	rm -f MeshApp.apk
 
-clean: clean_olsrd clean_guilib clean_meshapp
+# Local Variables:
+# mode: makefile
+# End:

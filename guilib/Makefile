@@ -16,3 +16,7 @@ src/olsrd_conf.o:
 	$(CC) $(CFLAGS) -c src/olsrd_config.c -o src/olsrd_config.o
 clean:
 	rm -f src/olsrd_config.o libs/libguilib.a
+
+# Local Variables:
+# mode: makefile
+# End:
