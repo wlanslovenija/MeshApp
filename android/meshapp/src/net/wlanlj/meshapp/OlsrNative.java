@@ -16,7 +16,9 @@ class OlsrNative {
 	}
     }
 
-    public static native String getProp(String name);
-    
-    public static native int runCommand(String command);
+    public static native int startOlsrd();
+
+    public static native int stopOlsrd();
+
+    public static native int generateConfigFile();
 }

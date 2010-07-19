@@ -37,28 +37,15 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStartListener activated");
 		Log.d(MSG_TAG, "Attempting to start olsrd...");
-		if (runRootCommand("olsrd") == true) {
-		    Log.i(MSG_TAG, "OLSR Daemon has started successfully!");
-		} else {
-		    Log.d(MSG_TAG, "Unable to start OLSR Daemon.");
-		}
+		// Here is where we call OlsrNative.startOlsr()
 	    }
-	};   
+	};
+   
     private OnClickListener olsrStopListener = new OnClickListener() {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStopListener activated");
 		Log.i(MSG_TAG, "Attempting to stop olsrd...");
+		// Here is where we call OlsrNative.stopOlsr()
 	    }
-	};
-    
-    public boolean runRootCommand(String command) {
-	Log.d(MSG_TAG, "Running command as root ==> su -c \""+command+"\"");
-	int exit = OlsrNative.runCommand("su -c \""+command+"\"");
-	if (exit == 0) {
-	    return true;
-	} else {
-	    Log.d(MSG_TAG, "Failed to run command "+command+"as root: returns "+exit);
-	    return false;
-	}
-    }
+	};    
 }

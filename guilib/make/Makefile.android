@@ -1,9 +1,11 @@
-
 ##
 # Android-Specific Cross-Compiler Configuration
 ##
 
-# (TO-DO: Make this portable.)
+CFLAGS += -Wall
+CFLAGS += -I$(NDK_ARCH)/usr/include
+CFLAGS += -Dandroid
+
 NDK = ~/android/android-ndk-r4
 NDK_ARCH = $(NDK)/build/platforms/android-3/arch-arm
 
@@ -11,7 +13,6 @@ CURRENT_SYSTEM = $(shell uname -s | tr A-Z a-z)
 CROSS_COMPILE = $(NDK)/build/prebuilt/$(CURRENT_SYSTEM)-x86/arm-eabi-4.2.1/bin/arm-eabi-
 
 CC = $(CROSS_COMPILE)gcc
-CFLAGS = -I$(NDK_ARCH)/usr/include
 
 # Local Variables:
 # mode: makefile

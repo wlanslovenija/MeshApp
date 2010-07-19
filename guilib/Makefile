@@ -1,21 +1,24 @@
 include make/Makefile.$(OS)
 
-.PHONY: all guilib clean
+SRCS = src/olsrd_config.c
+OBJS = $(SRCS:.c=.o)
 
-all: guilib
+.PHONY: all clean
 
-guilib: libs/libguilib.a
+all: libs/libguilib.a
 
 libs/libguilib.a: libguilib.a
 	mv libguilib.a libs/libguilib.a
 
-libguilib.a: src/olsrd_conf.o
-	ar -cvq libguilib.a src/olsrd_config.o
+libguilib.a: $(OBJS)
+	ar rcs libguilib.a $(OBJS)
 
-src/olsrd_conf.o:
-	$(CC) $(CFLAGS) -c src/olsrd_config.c -o src/olsrd_config.o
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
 clean:
-	rm -f src/olsrd_config.o libs/libguilib.a
+	rm -f libs/libguilib.a
+	rm -f $(OBJS)
 
 # Local Variables:
 # mode: makefile
