@@ -7,7 +7,7 @@ static const char *lock_file = "/data/data/net.wlanlj.meshapp/tmp/olsrd-ipv4.loc
 
 /* Function Prototypes  */
 
-int generate_config_file(void);
+static void generate_olsr_config_file(void);
 
 int get_olsr_pid(void);
 	

@@ -3,8 +3,8 @@
 ##
 
 CFLAGS += -Wall
-CFLAGS += -I$(NDK_ARCH)/usr/include
 CFLAGS += -Dandroid
+CFLAGS += -I$(NDK_ARCH)/usr/include
 
 NDK = ~/android/android-ndk-r4
 NDK_ARCH = $(NDK)/build/platforms/android-3/arch-arm

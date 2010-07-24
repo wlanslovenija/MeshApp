@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStartListener activated");
 		Log.d(MSG_TAG, "Attempting to start olsrd...");
-		// Here is where we call OlsrNative.startOlsr()
+		OlsrNative.startOlsrd();
 	    }
 	};
    
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStopListener activated");
 		Log.i(MSG_TAG, "Attempting to stop olsrd...");
-		// Here is where we call OlsrNative.stopOlsr()
+		OlsrNative.stopOlsrd();
 	    }
 	};    
 }

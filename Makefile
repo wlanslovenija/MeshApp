@@ -12,15 +12,15 @@ clean: clean_olsrd clean_guilib clean_meshapp
 
 olsrd: android/meshapp/res/raw/olsrd
 
-olsr/olsrd/olsrd:
-	make -C olsr/olsrd
+olsrd/olsrd:
+	make -C olsrd
 
-android/meshapp/res/raw/olsrd: olsr/olsrd/olsrd
-	cp olsr/olsrd/olsrd android/meshapp/res/raw/olsrd
+android/meshapp/res/raw/olsrd: olsrd/olsrd
+	cp olsrd/olsrd android/meshapp/res/raw/olsrd
 
 clean_olsrd:
-	make -C olsr/olsrd uberclean
-	rm -f olsr/olsrd/olsrd olsr/olsrd/olsrd/android/meshapp/res/raw/olsrd
+	make -C olsrd uberclean
+	rm -f olsrd/olsrd android/meshapp/res/raw/olsrd
 
 ##
 # GUIlib - Common

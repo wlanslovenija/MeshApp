@@ -19,6 +19,4 @@ class OlsrNative {
     public static native int startOlsrd();
 
     public static native int stopOlsrd();
-
-    public static native int generateConfigFile();
 }

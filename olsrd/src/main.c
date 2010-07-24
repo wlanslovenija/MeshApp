@@ -143,33 +143,38 @@ static void olsr_create_lock_file(void) {
     }
     olsr_exit("", EXIT_FAILURE);
   }
-#else
-  struct flock lck;
 
-  /* create file for lock */
-  lock_fd = open(lock_file_name, O_WRONLY | O_CREAT, S_IRWXU);
+#else
+
+  struct flock lck;   
+  mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+ 
+  lock_fd = open(lock_file_name, O_RDWR | O_CREAT, mode);
+
   if (lock_fd == 0) {
     close(lock_fd);
-    fprintf(stderr,
-        "Error, cannot create OLSR lock '%s'.\n",
-        lock_file_name);
+    printf("Error, cannot create lock '%s'\n", lock_file_name);
     olsr_exit("", EXIT_FAILURE);
-  }
 
-  /* create exclusive lock for the whole file */
-  lck.l_type = F_WRLCK;
-  lck.l_whence = SEEK_SET;
-  lck.l_start = 0;
-  lck.l_len = 0;
-  lck.l_pid = 0;
+  } else {
+    printf("Created lock file %s\n", lock_file_name);
 
-  if (fcntl(lock_fd, F_SETLK, &lck) == -1) {
+    lck.l_type = F_WRLCK;
+    lck.l_whence = SEEK_SET;
+    lck.l_start = 0;
+    lck.l_len = 0;
+    lck.l_pid = 0;  
+
+    fcntl(lock_fd, F_SETLKW, &lck);
+    printf("Set exclusive lock on %s\n", lock_file_name);
+
+    FILE *lock_file_write = fdopen(lock_fd, "w");
+
+    fprintf(lock_file_write, "%d\n", (int)getpid());
+    printf("Wrote %d to lock file %s\n", (int)getpid(), lock_file_name);
+    fclose(lock_file_write);
+   
     close(lock_fd);
-    fprintf(stderr,
-        "Error, cannot aquire OLSR lock '%s'.\n"
-        "Another OLSR instance might be running.\n",
-        lock_file_name);
-    olsr_exit("", EXIT_FAILURE);
   }
 #endif
   return;

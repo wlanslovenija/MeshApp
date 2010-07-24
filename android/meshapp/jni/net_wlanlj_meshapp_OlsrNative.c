@@ -13,10 +13,3 @@ JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_OlsrNative_stopOlsrd
 {
   return stop_olsrd();
 }
-
-JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_OlsrNative_generateConfigFile
-(JNIEnv *env, jclass class)
-{
-  return generate_config_file();
-}
-
