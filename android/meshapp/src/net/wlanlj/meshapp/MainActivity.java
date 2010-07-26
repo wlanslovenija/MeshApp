@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
    
-    /* Useful for debugging. */
     public static final String MSG_TAG = "MeshApp -> MainActivity ";
 
     @Override

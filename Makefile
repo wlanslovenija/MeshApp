@@ -56,13 +56,13 @@ clean_guilib_static:
 
 .PHONY: guilib_shared clean_guilib_shared
 
-guilib_shared: android/meshapp/libs/libguilib.so
+guilib_shared: android/meshapp/obj/local/armeabi/libguilib.so
 
-android/meshapp/libs/libguilib.so: guilib_static
+android/meshapp/obj/local/armeabi/libguilib.so: guilib_static
 	$(NDK)/ndk-build V=1 -C android/meshapp
 
 clean_guilib_shared:
-	rm -f android/meshapp/libs/armeabi/libguilib.so
+	rm -f android/meshapp/obj/local/armeabi/libguilib.so
 
 ##
 # MeshApp
@@ -77,6 +77,7 @@ android/meshapp/bin/MeshApp-debug.apk:
 	ant debug -buildfile android/meshapp/build.xml
 
 clean_meshapp:
+	ant clean -buildfile android/meshapp/build.xml
 	rm -f MeshApp.apk
 
 # Local Variables:

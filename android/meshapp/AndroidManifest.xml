@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="net.wlanlj.meshapp"
       android:versionCode="01" android:versionName="0.1-test">
-    <uses-sdk android:minSdkVersion="3" />
-    <application android:name="MeshApp" android:label="@string/global_application_name">
-        <activity android:name=".MainActivity"
+    <uses-sdk android:minSdkVersion="1" />
+    <application android:label="@string/global_application_name">
+    <activity android:name=".MainActivity"
                   android:label="@string/global_application_name"
                   android:configChanges="orientation|keyboardHidden"
                   android:screenOrientation="portrait" 

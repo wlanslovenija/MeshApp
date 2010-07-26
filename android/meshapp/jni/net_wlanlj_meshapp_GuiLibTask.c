@@ -1,6 +1,5 @@
 
 #include "net_wlanlj_meshapp_GuiLibTask.h"
-#include "../../../guilib/src/olsrd_config.h"
 
 JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_startOlsrd
 (JNIEnv *env, jclass class)
