@@ -1,16 +1,14 @@
 
 /* Global Variables */
 
-static const char *config_file = "/data/data/net.wlanlj.meshapp/tmp/olsrd.conf";
-static const char *lock_file = "/data/data/net.wlanlj.meshapp/tmp/olsrd-ipv4.lock";
-
+static const char *config_file = "/data/data/net.wlanlj.meshapp/etc/olsrd.conf";
 
 /* Function Prototypes  */
 
 static void generate_olsr_config_file(void);
 
-int get_olsr_pid(void);
-	
-int start_olsrd(void);
+// int adhoc_mode(void);
 
-int stop_olsrd(void);			 
+int run_olsrd(void);
+
+int kill_olsrd(void);

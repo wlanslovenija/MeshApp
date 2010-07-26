@@ -17,16 +17,16 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
    
-    /** Useful for debugging. */
-    public static final String MSG_TAG = "[[MeshApp]]::[MainActivity] -> ";
+    /* Useful for debugging. */
+    public static final String MSG_TAG = "MeshApp -> MainActivity ";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.olsr_main);
+        setContentView(R.layout.main);
 	Log.i(MSG_TAG, "Call to onCreate()");
 
-	// Prepare for button clicks.
+	/* Prepare for button clicks */
 	Button button = (Button)findViewById(R.id.start);
         button.setOnClickListener(olsrStartListener);
         button = (Button)findViewById(R.id.stop);
@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStartListener activated");
 		Log.d(MSG_TAG, "Attempting to start olsrd...");
-		OlsrNative.startOlsrd();
+		MeshApplication.startMesh();
 	    }
 	};
    
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 	    public void onClick(View v) {
 		Log.i(MSG_TAG, "olsrStopListener activated");
 		Log.i(MSG_TAG, "Attempting to stop olsrd...");
-		OlsrNative.stopOlsrd();
+		MeshApplication.stopMesh();
 	    }
 	};    
 }

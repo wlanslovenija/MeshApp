@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MeshApp (Test)</string>
-    <string name="olsr_started">OLSR daemon has started</string>
-    <string name="olsr_stopped">OLSR daemon has stopped</string>
-    <string name="olsr_label">OLSR Daemon</string>
-
-    <string name="activity_olsr_controller">OLSR Service Controller</string>
-    <string name="olsr_controller">A simple controller for the OLSR Daemon</string>
-    <string name="start_olsr">Start OLSR Daemon</string>
-    <string name="stop_olsr">Stop OLSR Daemon</string>
+	<string name="global_application_name">MeshApp</string>
+	<string name="olsr_controller"> Start/Stop the OLSR Daemon.</string>
+	<string name="start_olsrd">- Press to start OLSRD. -</string> 
+	<string name="stop_olsrd">- Press to stop OLSRD. -</string> 
 </resources>
