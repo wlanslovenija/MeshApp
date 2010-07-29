@@ -29,93 +29,171 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-/**
- * A simple class which controls the OLSR Daemon.
- */
-
 public class MainActivity extends Activity {
    
     public static final String MSG_TAG = "MeshApp -> MainActivity ";
    
     public static final String DATA_PATH = "/data/data/net.wlanlj.meshapp";
 
+    public boolean isMeshActive = false;
+
+    public boolean isInstalled = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 	Log.d(MSG_TAG, "Call to onCreate()");
-
+	   
 	/* Prepare for button clicks */
 	Button button = (Button)findViewById(R.id.start);
-        button.setOnClickListener(olsrStartListener);
+        button.setOnClickListener(startMeshListener);
         button = (Button)findViewById(R.id.stop);
-        button.setOnClickListener(olsrStopListener);
+        button.setOnClickListener(stopMeshListener);
+
+	/* Verify directory structure and install if needed */
+	Log.i(MSG_TAG, "Checking directory structure, preparing for installation.");
+	if (dirCheck() == 0 && isInstalled == false) {
+	    install();
+	}
     }
 
-    private OnClickListener olsrStartListener = new OnClickListener() {
+    private OnClickListener startMeshListener = new OnClickListener() {
+
 	    public void onClick(View v) {
-		Log.d(MSG_TAG, "olsrStartListener activated");
-		Log.i(MSG_TAG, "Attempting to start olsrd...");
-		if (startMesh() == -1)
-		    Log.e(MSG_TAG, "Error! Unable to start olsrd.");
-		else
-		    Log.i(MSG_TAG, "olsrd is now running.");
+		Log.d(MSG_TAG, "startMeshListener activated");
+		Log.i(MSG_TAG, "Preparing to connect to mesh network...");
+
+		/* Bind the start button to establishing a connection to the mesh. */
+		if (isMeshActive == false) {
+		    displayToastMessage("Starting olsrd, connecting to network.");
+		    startMesh();
+		} else {
+		    displayToastMessage("MeshApp is currently running. Nothing to be done.");
+		    Log.i(MSG_TAG, "Cannot start MeshApp when it is currently active.");
+		}
 	    }
 	};
    
-    private OnClickListener olsrStopListener = new OnClickListener() {
+    private OnClickListener stopMeshListener = new OnClickListener() {
+
 	    public void onClick(View v) {
-		Log.d(MSG_TAG, "olsrStopListener activated");
-		Log.i(MSG_TAG, "Attempting to stop olsrd...");
-		if (stopMesh() == -1)
-		    Log.e(MSG_TAG, "Error! Unable to stop olsrd.");
-		else
-		    Log.i(MSG_TAG, "olsrd has been stopped.");
+		Log.d(MSG_TAG, "stopMeshListener activated");
+		Log.i(MSG_TAG, "Attempting to stop Meshing...");
+
+		/* Bind the stop button to disconnecting from the mesh. */
+		if (isMeshActive == true) {
+		    displayToastMessage("Stopping olsrd, disconnecting from network.");
+		    stopMesh();
+		} else {
+		    displayToastMessage("MeshApp is not currently running. Nothing to be done.");
+		    Log.i(MSG_TAG, "Cannot stop MeshApp when it is currently inactive.");
+		}
 	    }
 	};    
-
-
-    public int startMesh() {
-
-	Log.i(MSG_TAG, "Installing binaries...");
-	install();
-
-	if (GuiLibTask.startOlsrd() == -1) {
-	    Log.e(MSG_TAG, "Error! Native method startOlsrd() returned -1.");
-	    return -1;
+    
+    public void startMesh() {
+	
+	/* Call GuiLibTask to start olsrd. */
+	
+	if (GuiLibTask.startOlsrd() == 0) {
+	    Log.i(MSG_TAG, "olsrd is now running through GuiLibTask.");
+	    isMeshActive = true;
+	} else {
+	    Log.e(MSG_TAG, "Error! GuiLibTask failed to run olsrd.");
 	}
-
-	/*
-	  A default way to start olsrd, if Native method fails for some reason.
-
-	  String[] cmd = {"su", "-c", "olsrd"};
-	  runCommand(cmd);
-	*/
-
-
-	return 0;
     }
     
-    public int stopMesh() {
+    public void stopMesh() {	
 	
-	if (GuiLibTask.stopOlsrd() == -1) {
-	    return -1;
+	/* Call GuiLibTask to stop olsrd. */
+	
+	if (GuiLibTask.stopOlsrd() == 0) {
+	    Log.i(MSG_TAG, "olsrd is no longer running through GuiLibTask.");
+	    isMeshActive = false;
+	} else {
+	    Log.e(MSG_TAG, "Error! GuiLibTask failed to stop olsrd.");
+	}
+    }
+
+    
+    private int dirCheck() {
+
+	/* Store the subdirectories we want under DATA_PATH in an array. */
+	String[] dirs = {"/lib", "/bin", "/etc", "/tmp"};
+	
+	/* Check if each directory exists, creating it if necessary. */
+	for(String dir : dirs) {
+	    File dirPath = new File(DATA_PATH+dir);
+	    Log.i(MSG_TAG, "Checking directory "+dir);
+	    if (dirPath.isDirectory()) {
+		Log.i(MSG_TAG, dir+": directory already exists.");
+	    } else if (dirPath.mkdir()) {
+		Log.i(MSG_TAG, "Created new directory "+dir);
+	    } else {
+		Log.e(MSG_TAG, "Error! Cannot find or create directory "+dir);
+		return -1;
+	    }
 	}
 	return 0;
+    }	
+    
+
+    public void install() {
+
+	/* Install the binary files we need to /data/data/net.wlanlj.meshapp/bin */
+	
+	Log.i(MSG_TAG, "Starting MeshApp installer...");
+	
+	new Thread(new Runnable() {
+		public void run() {
+		    
+		    try {
+			/* Instantiate an AM and store a list files under /assets/bin in an array. */
+			AssetManager assetManager = getAssets();
+			String[] sourceFiles = assetManager.list("bin");
+
+			for (String src : sourceFiles) {
+			    File targetFile = new File(DATA_PATH+"/bin", src);
+			    
+			    /* If the target file does not exist, create a copy from the bundled asset. */
+			    if (!targetFile.exists()) {
+				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(targetFile));
+				BufferedInputStream in = new BufferedInputStream(assetManager.open("bin/"+src, 2));	
+				
+				int len; 
+				byte[] buf = new byte[1024];
+				
+				while((len = in.read(buf)) != -1) {
+				    out.write(buf, 0, len);
+				}	
+				
+				Log.i(MSG_TAG, "Wrote file "+targetFile.toString());
+				in.close();
+				out.close();
+			    } else {
+				Log.i(MSG_TAG, src+": File already exists. Nothing to be done.");
+			    }
+			}
+			
+		    } catch (IOException io) {
+			Log.e(MSG_TAG, "Error! Install failed.");
+			Log.e(MSG_TAG, io.getMessage());
+		    } catch (Exception ex) {
+			Log.e(MSG_TAG, "Error! Install failed.");
+			Log.e(MSG_TAG, ex.getMessage());
+		    }
+		}	    
+	    }).start();	    
+	isInstalled = true;
+	displayToastMessage("MeshApp has successfully been installed!");
     }
-
-    private void chmod(String filePath, String permission) {
-	String[] cmd = {"chmod", permission, filePath};
-	Log.i(MSG_TAG, "Setting "+filePath+" with permission "+permission);
-	runCommand(cmd);
-    }
-
-
+    
     private void runCommand(String[] commands) {
-	ArrayList res = new ArrayList(10);
 
+	/* Run a shell command. */
+
+	ArrayList res = new ArrayList(10);
 	try {
 	    Process process = Runtime.getRuntime().exec(commands);
 	    DataOutputStream os = new DataOutputStream(process.getOutputStream());
@@ -134,64 +212,17 @@ public class MainActivity extends Activity {
 	    Log.e(MSG_TAG, ex.getMessage());
 	}
     }
-    
-    public void install() {
-	Log.i(MSG_TAG, "Starting MeshApp installer...");
 
-	if (dirCheck() == 0) {
-	    new Thread(new Runnable() {
-		    public void run() {
-			
-			try {
-			    AssetManager assetManager = getAssets();
-			    String[] sourceFiles = assetManager.list("bin");
+    private void setFileExecutable(String filePath) {
 	
+	/* Pipe "chmod +x <file>" through the shell. */
 
-			    for (String src : sourceFiles) {
-				File targetFile = new File(DATA_PATH+"/bin", src);
-
-				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(targetFile));
-				BufferedInputStream in = new BufferedInputStream(assetManager.open("bin/"+src, 2));	
-		    
-				int len; 
-				byte[] buf = new byte[1024];
-				
-				while((len = in.read(buf)) != -1) {
-				    out.write(buf, 0, len);
-				}	
-				
-				Log.i(MSG_TAG, "Wrote file "+targetFile.toString());
-				in.close();
-				out.close();   
-			    }	    
-  
-		    } catch (IOException io) {
-			Log.e(MSG_TAG, io.getMessage());
-		    } catch (Exception ex) {
-			Log.e(MSG_TAG, ex.getMessage());
-		    }
-		}	    
-	    }).start();
-
-	} else {
-	    Log.e(MSG_TAG, "Error! Unable to install files to /bin directory.");
-	}	
+	String[] cmd = {"chmod", "+x", filePath};
+	Log.i(MSG_TAG, "Setting "+filePath+" as executable.");
+	runCommand(cmd);
     }
 
-    private int dirCheck() {
-	String[] dirs = {"/lib", "/bin", "/etc", "/tmp"};
-
-	for(String dir : dirs) {
-	    File dirPath = new File(DATA_PATH+dir);
-	    if (dirPath.isDirectory()) {
-		Log.i(MSG_TAG, dir+": directory already exists.");
-	    } else if (dirPath.mkdir()) {
-		Log.i(MSG_TAG, "Created new directory "+dir);
-	    } else {
-		Log.e(MSG_TAG, "Error! Cannot find or create directory "+dir);
-		return -1;
-	    }
-	}
-	return 0;
-    }	
+    public void displayToastMessage(String message) {
+	Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
 }
