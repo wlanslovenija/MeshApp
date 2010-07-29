@@ -1,10 +1,11 @@
+
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := guilib
-LOCAL_C_INCLUDES := ../../../guilib/src/
 LOCAL_SRC_FILES := net_wlanlj_meshapp_GuiLibTask.c
-LOCAL_STATIC_LIBRARIES := libguilib
+
+LOCAL_STATIC_LIBRARIES := guilib-static
 
 include $(BUILD_SHARED_LIBRARY)

@@ -1,7 +1,6 @@
 ##
 # Android-Specific Cross-Compiler Configuration
 ##
-
 CFLAGS += -Wall
 CFLAGS += -Dandroid
 CFLAGS += -I$(NDK_ARCH)/usr/include

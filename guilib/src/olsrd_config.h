@@ -1,7 +1,16 @@
 
 /* Global Variables */
 
-static const char *config_file = "/data/data/net.wlanlj.meshapp/etc/olsrd.conf";
+const char *bin_path = "/data/data/net.wlanlj.meshapp/bin/";
+const char *etc_path = "/data/data/net.wlanlj.meshapp/etc/";
+const char *tmp_path = "/data/data/net.wlanlj.meshapp/tmp/";
+
+const char *config_file_name = "olsrd.conf";
+const char *lock_file_name = "olsrd.lock";
+
+const char *start_script_name = "run_olsrd";
+const char *stop_script_name = "kill_olsrd";
+const char *adhoc_mode_script_name = "adhoc_mode";
 
 /* Function Prototypes  */
 

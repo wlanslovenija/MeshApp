@@ -8,11 +8,12 @@
 
 void generate_olsr_config_file(void)
 {
-  
+
+  const char *config_file = strncat(etc_path, config_file_name, strlen(config_file_name));
+ 
   FILE *cnf = fopen(config_file, "w");
 
   if (cnf != NULL) {
-    printf("Generating file olsrd.conf");
 
     fprintf(cnf,"#\n"
 	    "# OLSR.org routing daemon config file\n"
@@ -69,35 +70,40 @@ void generate_olsr_config_file(void)
 	    "{\n"
 	    "\t Mode \"mesh\"\n"
 	    "}\n");
-  } else {
-    fclose(cnf);
   }
-return;
+  fclose(cnf);
+  return;
 }
 
 int adhoc_mode()
 {
 
+  return 0;
+  
   // return execl("/system/bin/sh", "/data/data/net.wlanlj.meshapp/bin/adhoc_mode", NULL);
 
-  return 0;
+ 
 }
 
 int run_olsrd()
 {
 
-  //  generate_olsr_config_file();
-  //  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/run_olsrd", NULL);
-  
+  // const char *run_path = "/bin/run_olsrd";
+  // const char *bin_file = strncat(data_path, run_path, strlen(run_path));
+
+  // generate_olsr_config_file();
   adhoc_mode();
   return 0;
+
+  //  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/run_olsrd", NULL); 
 }
 
 int kill_olsrd()
 {
 
+  return 0;
+ 
   // return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/kill_olsrd", NULL);
   
-  return 0;
 }
 
