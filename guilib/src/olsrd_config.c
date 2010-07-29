@@ -70,29 +70,34 @@ void generate_olsr_config_file(void)
 	    "\t Mode \"mesh\"\n"
 	    "}\n");
   } else {
-
-    /* There was an error generating the config file */
     fclose(cnf);
   }
 return;
 }
 
-/*
 int adhoc_mode()
 {
- return execl("/system/bin/sh", "/data/data/net.wlanlj.meshapp/bin/adhoc_mode", NULL);
+
+  // return execl("/system/bin/sh", "/data/data/net.wlanlj.meshapp/bin/adhoc_mode", NULL);
+
+  return 0;
 }
-*/
 
 int run_olsrd()
 {
-  generate_olsr_config_file();
 
-  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/run_olsrd", NULL);
+  //  generate_olsr_config_file();
+  //  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/run_olsrd", NULL);
+  
+  adhoc_mode();
+  return 0;
 }
 
 int kill_olsrd()
 {
-  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/kill_olsrd", NULL);
+
+  // return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/kill_olsrd", NULL);
+  
+  return 0;
 }
 

@@ -7,7 +7,7 @@ static const char *config_file = "/data/data/net.wlanlj.meshapp/etc/olsrd.conf";
 
 static void generate_olsr_config_file(void);
 
-// int adhoc_mode(void);
+int adhoc_mode(void);
 
 int run_olsrd(void);
 

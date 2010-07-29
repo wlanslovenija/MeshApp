@@ -9,7 +9,7 @@ class GuiLibTask {
     static {
 	try {
 	    Log.i(MSG_TAG, "Attempting to load GUI Library...");
-	    System.loadLibrary("libguilib");
+	    System.loadLibrary("guilib");
 	}
 	catch (Exception ex) {
 	    Log.e(MSG_TAG, "GuiLib failed to load!");

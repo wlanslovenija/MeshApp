@@ -10,17 +10,17 @@ clean: clean_olsrd clean_guilib clean_meshapp
 
 .PHONY: olsrd clean_olsrd
 
-olsrd: android/meshapp/res/raw/olsrd
+olsrd: android/meshapp/assets/bin/olsrd
 
 olsrd/olsrd:
 	make -C olsrd
 
-android/meshapp/res/raw/olsrd: olsrd/olsrd
-	cp olsrd/olsrd android/meshapp/res/raw/olsrd
+android/meshapp/assets/bin/olsrd: olsrd/olsrd
+	cp olsrd/olsrd android/meshapp/assets/bin/olsrd
 
 clean_olsrd:
 	make -C olsrd uberclean
-	rm -f olsrd/olsrd android/meshapp/res/raw/olsrd
+	rm -f olsrd/olsrd android/meshapp/assets/bin/olsrd
 
 ##
 # GUIlib - Common
