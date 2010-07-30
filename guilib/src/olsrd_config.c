@@ -1,3 +1,8 @@
+/*-------------------------------------------*\
+ *              olsrd.config.c               *
+\*-------------------------------------------*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -9,9 +14,9 @@
 void generate_olsr_config_file(void)
 {
 
-  const char *config_file = strncat(etc_path, config_file_name, strlen(config_file_name));
+  //const char *config_file = strncat(tmp_path, config_file_name, strlen(config_file_name));
  
-  FILE *cnf = fopen(config_file, "w");
+  FILE *cnf = fopen("olsrd.conf", "w");
 
   if (cnf != NULL) {
 
@@ -77,33 +82,26 @@ void generate_olsr_config_file(void)
 
 int adhoc_mode()
 {
-
   return 0;
-  
-  // return execl("/system/bin/sh", "/data/data/net.wlanlj.meshapp/bin/adhoc_mode", NULL);
-
- 
 }
 
 int run_olsrd()
 {
-
-  // const char *run_path = "/bin/run_olsrd";
-  // const char *bin_file = strncat(data_path, run_path, strlen(run_path));
-
-  // generate_olsr_config_file();
-  adhoc_mode();
-  return 0;
-
-  //  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/run_olsrd", NULL); 
+  
+  //const char *run_script_path = "/bin/run_olsrd";
+  // const char *run_script = strncat(data_path, run_script_path, strlen(run_script_path));
+  
+  if (adhoc_mode() == 0) {
+    generate_olsr_config_file();
+    return 0;
+    //  execl("/system/bin/sh", bin_file, NULL); 
+  } else {
+    return -1;
+  }
 }
 
 int kill_olsrd()
 {
-
-  return 0;
- 
-  // return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/kill_olsrd", NULL);
-  
+  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/kill_olsrd", NULL);
 }
 

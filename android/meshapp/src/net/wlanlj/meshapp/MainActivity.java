@@ -66,7 +66,6 @@ public class MainActivity extends Activity {
 
 		/* Bind the start button to establishing a connection to the mesh. */
 		if (isMeshActive == false) {
-		    displayToastMessage("Starting olsrd, connecting to network.");
 		    startMesh();
 		} else {
 		    displayToastMessage("MeshApp is currently running. Nothing to be done.");
@@ -83,7 +82,6 @@ public class MainActivity extends Activity {
 
 		/* Bind the stop button to disconnecting from the mesh. */
 		if (isMeshActive == true) {
-		    displayToastMessage("Stopping olsrd, disconnecting from network.");
 		    stopMesh();
 		} else {
 		    displayToastMessage("MeshApp is not currently running. Nothing to be done.");
@@ -97,9 +95,11 @@ public class MainActivity extends Activity {
 	/* Call GuiLibTask to start olsrd. */
 	
 	if (GuiLibTask.startOlsrd() == 0) {
+	    displayToastMessage("Starting olsrd, connecting to network.");
 	    Log.i(MSG_TAG, "olsrd is now running through GuiLibTask.");
 	    isMeshActive = true;
 	} else {
+	    displayToastMessage("Error! Failed to start OLSR.");
 	    Log.e(MSG_TAG, "Error! GuiLibTask failed to run olsrd.");
 	}
     }
@@ -109,9 +109,11 @@ public class MainActivity extends Activity {
 	/* Call GuiLibTask to stop olsrd. */
 	
 	if (GuiLibTask.stopOlsrd() == 0) {
+	    displayToastMessage("Stopping olsrd, disconnecting from network.");
 	    Log.i(MSG_TAG, "olsrd is no longer running through GuiLibTask.");
 	    isMeshActive = false;
 	} else {
+	    displayToastMessage("Error! Failed to stop OLSR.");
 	    Log.e(MSG_TAG, "Error! GuiLibTask failed to stop olsrd.");
 	}
     }
@@ -120,7 +122,7 @@ public class MainActivity extends Activity {
     private int dirCheck() {
 
 	/* Store the subdirectories we want under DATA_PATH in an array. */
-	String[] dirs = {"/lib", "/bin", "/etc", "/tmp"};
+	String[] dirs = {"/lib", "/bin", "/tmp"};
 	
 	/* Check if each directory exists, creating it if necessary. */
 	for(String dir : dirs) {

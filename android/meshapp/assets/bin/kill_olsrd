@@ -1,5 +1,9 @@
 #!/system/bin/sh
 
+#--------------------------------------------------------------------------------------------------#
+# When invoked, this script stops the OLSR daemon from running by locating its PID and killing it. #
+#--------------------------------------------------------------------------------------------------#
+
 for cmd in /proc/*/cmdline
 do
     case "$(cat $cmd)" in

@@ -1,24 +1,30 @@
+#-------------------#
+#  GuiLib Makefile  #
+#-------------------#
+
+.PHONY: all libguilib-static clean
+
+#-----------------------#
+#  Build GuiLib-Static  #
+#-----------------------#
+
 include make/Makefile.$(OS)
 
-SRCS = src/olsrd_config.c
-OBJS = $(SRCS:.c=.o)
+libguilib-static: libs/libguilib-static.a
 
-.PHONY: all clean
+libs/libguilib-static.a: src/olsrd_config.o
+	$(AR) $(ARFLAGS) libs/libguilib-static.a src/olsrd_config.o
 
-all: libs/libguilib-static.a
+src/olsrd_config.o:
+	$(CC) $(CFLAGS) -c src/olsrd_config.c -o src/olsrd_config.o
 
-libs/libguilib-static.a: libguilib-static.a
-	mv libguilib-static.a libs/libguilib-static.a
-
-libguilib-static.a: $(OBJS)
-	ar rcs libguilib-static.a $(OBJS)
-
-.c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+#-----------------------#
+#  Clean GuiLib-Static  #
+#-----------------------#
 
 clean:
 	rm -f libs/libguilib-static.a
-	rm -f $(OBJS)
+	rm -f src/olsrd_config.o
 
 # Local Variables:
 # mode: makefile

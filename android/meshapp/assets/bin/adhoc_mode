@@ -1,4 +1,8 @@
 #!/system/bin/sh
+
+#---------------------------------------------------------------------------------------------------------------------#
+# This script enables ad-hoc mode on Android and configures the device for connecting to an ad-hoc wireless network.  #
+#---------------------------------------------------------------------------------------------------------------------#
 	
 wpa_cli	-i tiwlan0 -p /data/misc/wifi set_network 2 mode 1
 wpa_cli -i tiwlan0 -p /data/misc/wifi set_network 2 ssid "open.wlan-lj.net"
