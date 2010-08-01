@@ -9,18 +9,26 @@ extern "C" {
 #endif
 /*
  * Class:     net_wlanlj_meshapp_GuiLibTask
- * Method:    startOlsrd
+ * Method:    init
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_init
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_wlanlj_meshapp_GuiLibTask
+ * Method:    start
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_startOlsrd
+JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_start
   (JNIEnv *, jclass);
 
 /*
  * Class:     net_wlanlj_meshapp_GuiLibTask
- * Method:    stopOlsrd
+ * Method:    stop
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_stopOlsrd
+JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_stop
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus

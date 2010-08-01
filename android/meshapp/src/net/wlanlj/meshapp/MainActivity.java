@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
    
     public static final String MSG_TAG = "MeshApp -> MainActivity ";
    
-    public static final String DATA_PATH = "/data/data/net.wlanlj.meshapp";
+    public String DATA_PATH = "/data/data/net.wlanlj.meshapp";
 
     public boolean isMeshActive = false;
 
@@ -51,10 +51,16 @@ public class MainActivity extends Activity {
         button = (Button)findViewById(R.id.stop);
         button.setOnClickListener(stopMeshListener);
 
-	/* Verify directory structure and install if needed */
+	/* Verify directory structure, install files if necessary */
 	Log.i(MSG_TAG, "Checking directory structure, preparing for installation.");
 	if (dirCheck() == 0 && isInstalled == false) {
 	    install();
+	}
+
+	if (GuiLibTask.init(DATA_PATH) != 0) {
+	    Log.e(MSG_TAG, "Error! GuiLib initalization failed.");
+	} else {
+	    Log.i(MSG_TAG, "Ready to call native GuiLib functions.");
 	}
     }
 
@@ -94,7 +100,7 @@ public class MainActivity extends Activity {
 	
 	/* Call GuiLibTask to start olsrd. */
 	
-	if (GuiLibTask.startOlsrd() == 0) {
+	if (GuiLibTask.start() > 0) {
 	    displayToastMessage("Starting olsrd, connecting to network.");
 	    Log.i(MSG_TAG, "olsrd is now running through GuiLibTask.");
 	    isMeshActive = true;
@@ -108,7 +114,7 @@ public class MainActivity extends Activity {
 	
 	/* Call GuiLibTask to stop olsrd. */
 	
-	if (GuiLibTask.stopOlsrd() == 0) {
+	if (GuiLibTask.stop() > 0) {
 	    displayToastMessage("Stopping olsrd, disconnecting from network.");
 	    Log.i(MSG_TAG, "olsrd is no longer running through GuiLibTask.");
 	    isMeshActive = false;

@@ -1,17 +1,50 @@
-/*-------------------------------------------*\
- *              olsrd.config.c               *
-\*-------------------------------------------*/
-
+/*------------*\
+ *  guilib.c  *
+\*------------*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <errno.h>
 #include <string.h>
 #include <strings.h>
-#include "olsrd_config.h"
+#include <android/log.h>
 
-void generate_olsr_config_file(void)
+#include "guilib.h"
+
+static const char *msg_tag = "GuiLib -> guilib";
+
+int init(const char *path)
+{
+  if (path != NULL) {
+    data_dir_path = path;
+    return 0;
+  } else {
+    return -1;
+  }
+}
+
+int meshapp_start()
+{
+  if (adhoc_mode() == -1 || generate_olsr_config_file() == -1)
+    return -1;
+
+  if (run_olsrd() == -1)
+    return -1;
+  
+  return 0;
+}
+
+int meshapp_stop()
+{
+  if (kill_olsrd() == -1)
+    return -1;
+
+  return 0;
+}
+
+int generate_olsr_config_file(void)
 {
 
   //const char *config_file = strncat(tmp_path, config_file_name, strlen(config_file_name));
@@ -75,9 +108,15 @@ void generate_olsr_config_file(void)
 	    "{\n"
 	    "\t Mode \"mesh\"\n"
 	    "}\n");
+
+    fclose(cnf);
+    return 0;
+  } else {
+    __android_log_print(ANDROID_LOG_ERROR, msg_tag, "Unable to open file olsrd.conf: %s\n", strerror(errno));
+    return -1;
   }
-  fclose(cnf);
-  return;
+
+  return -1;
 }
 
 int adhoc_mode()
@@ -87,21 +126,11 @@ int adhoc_mode()
 
 int run_olsrd()
 {
-  
-  //const char *run_script_path = "/bin/run_olsrd";
-  // const char *run_script = strncat(data_path, run_script_path, strlen(run_script_path));
-  
-  if (adhoc_mode() == 0) {
-    generate_olsr_config_file();
-    return 0;
-    //  execl("/system/bin/sh", bin_file, NULL); 
-  } else {
-    return -1;
-  }
+  return 0;
 }
 
 int kill_olsrd()
 {
-  return execl("/system/bin/sh", "data/data/net.wlanlj.meshapp/bin/kill_olsrd", NULL);
+  return 0;
 }
 

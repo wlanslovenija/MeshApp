@@ -12,11 +12,11 @@ include make/Makefile.$(OS)
 
 libguilib-static: libs/libguilib-static.a
 
-libs/libguilib-static.a: src/olsrd_config.o
-	$(AR) $(ARFLAGS) libs/libguilib-static.a src/olsrd_config.o
+libs/libguilib-static.a: src/guilib.o
+	$(AR) $(ARFLAGS) libs/libguilib-static.a src/guilib.o
 
-src/olsrd_config.o:
-	$(CC) $(CFLAGS) -c src/olsrd_config.c -o src/olsrd_config.o
+src/guilib.o:
+	$(CC) $(CFLAGS) -c src/guilib.c -o src/guilib.o
 
 #-----------------------#
 #  Clean GuiLib-Static  #
@@ -24,7 +24,7 @@ src/olsrd_config.o:
 
 clean:
 	rm -f libs/libguilib-static.a
-	rm -f src/olsrd_config.o
+	rm -f src/guilib.o
 
 # Local Variables:
 # mode: makefile

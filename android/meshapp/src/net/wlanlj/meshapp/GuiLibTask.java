@@ -16,7 +16,9 @@ class GuiLibTask {
 	}
     }
 
-    public static native int startOlsrd();
+    public static native int init(String path);
 
-    public static native int stopOlsrd();
+    public static native int start();
+
+    public static native int stop();
 }

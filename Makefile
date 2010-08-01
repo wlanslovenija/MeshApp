@@ -24,6 +24,7 @@ olsr/olsrd/olsrd:
 
 guilib: android/meshapp/obj/local/armeabi/libguilib.so
 
+# Invoke NDK to build the shared libraries.
 android/meshapp/obj/local/armeabi/libguilib.so: guilib-static
 	$(NDK)/ndk-build V=1 -C android/meshapp
 
