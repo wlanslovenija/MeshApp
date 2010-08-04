@@ -8,76 +8,75 @@
 #include <signal.h>
 #include <errno.h>
 #include <string.h>
-#include <strings.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include <android/log.h>
 
 #include "guilib.h"
+
+const char* meshapp_dir = "/data/data/net.wlanlj.meshapp";
 
 static const char *msg_tag = "GuiLib -> guilib";
 
 int init(const char *path)
 {
-  if (path != NULL) {
-    data_dir_path = path;
-    return 0;
-  } else {
+  path = meshapp_dir;
+
+  if (chdir(path) != 0) {
+    android_log_error("chdir() with non-zero exit status");
     return -1;
+  } else {
+    android_log_info("set guilib working directory to specified path");
+    return 0;
   }
 }
 
 int meshapp_start()
 {
-  if (adhoc_mode() == -1 || generate_olsr_config_file() == -1)
-    return -1;
 
-  if (run_olsrd() == -1)
+  generate_olsr_config_file("tmp/olsrd.conf");
+
+  if (system("su -c /data/data/net.wlanlj.meshapp/bin/olsrd_init") != 0) {
+    android_log_error("failed to run olsrd");
     return -1;
-  
-  return 0;
+  } else {
+    android_log_info("started olsrd");
+    return 0;
+  }
 }
+  
 
 int meshapp_stop()
 {
-  if (kill_olsrd() == -1)
+  if (system("su -c /data/data/net.wlanlj.meshapp/bin/olsrd_kill") != 0) {
+    android_log_error("failed to kill olsrd");
     return -1;
-
-  return 0;
+  } else {
+    android_log_info("killed olsrd");  
+    return 0;
+  }
 }
 
-int generate_olsr_config_file(void)
+void generate_olsr_config_file(const char *file_name)
 {
-
-  //const char *config_file = strncat(tmp_path, config_file_name, strlen(config_file_name));
- 
-  FILE *cnf = fopen("olsrd.conf", "w");
+  FILE *cnf = fopen(file_name, "w");
 
   if (cnf != NULL) {
-
     fprintf(cnf,"#\n"
 	    "# OLSR.org routing daemon config file\n"
 	    "#\n"
-	    "# Lines starting with # are discarded.\n"
-	    "#\n"
 	    "# This file was written automatically by MeshApp.\n"
 	    "#\n"
-	    "###\n"
-	    "# BASIC CONFIG\n"
-	    "###\n"
-	    "# Run OLSR in the background by setting DebugLevel to 0.\n"
-	    "DebugLevel \t 0\n"
+	    "DebugLevel \t 5\n"
 	    "IpVersion \t 4\n"
-	    "# Prevents multiple instances of OLSR from running at once.\n"
 	    "LockFile \t \"/data/data/net.wlanlj.meshapp/tmp/olsrd.lock\"\n"
 	    "FIBMetric \t \"flat\"\n"
 	    "ClearScreen \t yes\n"
-	    "# Allow OLSR to run without specifying an interface.\n"
 	    "AllowNoInt \t yes\n"
-	    "# Disable Hysteresis, enabled by default.\n"
 	    "UseHysteresis \t no\n"
-	    "# Interval between polling network interface for config changes.\n"
 	    "NicChgsPollInt \t 3.0\n"
-	    "# How much information about neighbors to send in TC msgs.\n"
-	    "# Setting 2 tells OLSRD to send info about all neighbors.\n"
 	    "TcRedundancy \t 2\n"
 	    "MprCoverage \t 3\n"
 	    "Hna4\n"
@@ -85,52 +84,45 @@ int generate_olsr_config_file(void)
 	    "\t # Internet gateway\n"
 	    "\t # 0.0.0.0 \t 0.0.0.0\n"
 	    "}\n"
-	    "IpcConnect\n"
-	    "{\n"
-	    "\t # Set number of simultaneous IPC connections to allow\n"
-	    "\t # This disables IPC\n"
-	    "\t MaxConnections 0\n"
-	    "\t # Hosts permitted for IPC connect\n"
-	    "\t Host \t 127.0.0.1\n"
-	    "}\n"
-	    "###\n"
-	    "# PLUGINS\n"
-	    "###\n"
-	    "LoadPlugin \"/data/data/net.wlanlj.meshapp/lib/olsrd_txtinfo.so.0.1\"\n"
-	    "{\n"
-	    "\t PlParam \t \"Accept\" \t \"127.0.0.1\"\n"
-	    "\t # PlParam \t \"Accept\" \t \"0.0.0.0\"\n"
-	    "}\n"
-	    "###\n"
-	    "# NETWORK INTERFACE\n"
-	    "###\n"
+	    "#IpcConnect\n"
+	    "#{\n"
+	    "#\t MaxConnections 0\n"
+	    "#\t Host \t 127.0.0.1\n"
+	    "#}\n"
+	    "#LoadPlugin \"lib/olsrd_txtinfo.so.0.1\"\n"
+	    "#{\n"
+	    "#\t PlParam \t \"Accept\" \t \"127.0.0.1\"\n"
+	    "#\t # PlParam \t \"Accept\" \t \"0.0.0.0\"\n"
+	    "#}\n"
 	    "Interface \"tiwlan0\"\n"
 	    "{\n"
 	    "\t Mode \"mesh\"\n"
 	    "}\n");
 
     fclose(cnf);
-    return 0;
+    android_log_info("Wrote olsrd.conf");
+
   } else {
-    __android_log_print(ANDROID_LOG_ERROR, msg_tag, "Unable to open file olsrd.conf: %s\n", strerror(errno));
-    return -1;
+    android_log_error("Failed to write olsrd.conf");
+    _exit(EXIT_FAILURE);
   }
 
-  return -1;
+  return;
 }
 
-int adhoc_mode()
+
+void android_log_error(const char *msg)
 {
-  return 0;
+
+  __android_log_print(ANDROID_LOG_ERROR, msg_tag, "Error! %s: %s", msg, strerror(errno));
+
+  return;
 }
 
-int run_olsrd()
+void android_log_info(const char *msg)
 {
-  return 0;
-}
+  __android_log_write(ANDROID_LOG_INFO, msg_tag, msg);
 
-int kill_olsrd()
-{
-  return 0;
-}
+  return;
 
+}

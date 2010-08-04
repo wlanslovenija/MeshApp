@@ -3,19 +3,12 @@
 \*------------*/
 
 /**
- * Global Variables 
+ * Definitions
  */
 
-const char *data_dir_path;
+#define MAX_PATH_LENGTH 128
+#define SLEEP_DURATION 5
 
-const char *config_file_name = "tmp/olsrd.conf";
-const char *lock_file_name = "tmp/olsrd.lock";
-
-/*
-const char *start_script = "bin/run_olsrd";
-const char *stop_script = "bin/kill_olsrd";
-const char *adhoc_mode_script = "bin/adhoc_mode";
-*/
 
 /**
  * Function Prototypes 
@@ -27,10 +20,8 @@ int meshapp_start(void);
 
 int meshapp_stop(void);
 
-int generate_olsr_config_file(void);
+void generate_olsr_config_file(const char *cfg);
 
-int adhoc_mode(void);
+void android_log_error(const char *m);
 
-int run_olsrd(void);
-
-int kill_olsrd(void);
+void android_log_info(const char *m);
