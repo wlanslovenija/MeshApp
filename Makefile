@@ -67,8 +67,8 @@ clean_olsrd:
 
 clean_guilib:
 	make -C guilib clean
-	rm -f android/meshapp/obj/local/armeabi/objs/libguilib.so
-	rm -f android/meshapp/obj/local/armeabi/objs/libguilib-static.a
+	rm -f android/meshapp/obj/local/armeabi/libguilib.so
+	rm -f android/meshapp/obj/local/armeabi/libguilib-static.a
 	rm -f android/meshapp/obj/local/armeabi/objs/guilib/net_wlanlj_meshapp_GuiLibTask.o
 	rm -f android/meshapp/obj/local/armeabi/objs/guilib/net_wlanlj_meshapp_GuiLibTask.o.d
 

@@ -31,8 +31,8 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
    
-    public static final String MSG_TAG = "MeshApp -> MainActivity ";
-   
+    public static final String MSG_TAG = "MainActivity ";
+
     public String DATA_PATH = "/data/data/net.wlanlj.meshapp";
 
     public boolean isMeshActive = false;
@@ -43,20 +43,17 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-	   
-	/* Prepare for button clicks */
+	
+	if (!isInstalled) {
+	    install();
+	}
+
+	displayToastMessage("MeshApp-0.1-test");
+	
 	Button button = (Button)findViewById(R.id.start);
         button.setOnClickListener(startMeshListener);
         button = (Button)findViewById(R.id.stop);
         button.setOnClickListener(stopMeshListener);
-
-	displayToastMessage("MeshApp-0.1-test");
-
-	/* Verify directory structure, install files if necessary */
-	if (isInstalled == false) {
-	    dirCheck();
-	    install();
-	}
     }
 	
 	private OnClickListener startMeshListener = new OnClickListener() {
@@ -68,14 +65,15 @@ public class MainActivity extends Activity {
 		    } else {
 			displayToastMessage("Meshapp is already running, cannot start again.");
 			Log.i(MSG_TAG, "Attempt to start MeshApp while already active.");
+		
 		    }
 		}
 	    };
-   
+	
 	private OnClickListener stopMeshListener = new OnClickListener() {
-
+		
 		public void onClick(View v) {
-
+		    
 		    if (isMeshActive == true) {
 			stopMesh();
 		    } else {
@@ -84,7 +82,7 @@ public class MainActivity extends Activity {
 		    }
 		}
 	    };    
-    
+	
 	public void startMesh() {
 	
 	    /* Call GuiLibTask to start olsrd. */
@@ -111,7 +109,7 @@ public class MainActivity extends Activity {
 	}
 
     
-	private int dirCheck() {
+	public void dirCheck() {
 
 	    /* Store the subdirectories we want under DATA_PATH in an array. */
 	    String[] dirs = {"/lib", "/bin", "/tmp"};
@@ -126,14 +124,14 @@ public class MainActivity extends Activity {
 		    Log.i(MSG_TAG, "Created new directory "+dir);
 		} else {
 		    Log.e(MSG_TAG, "Error! Cannot find or create directory "+dir);
-		    return -1;
 		}
 	    }
-	    return 0;
 	}	
     
 
 	public void install() {
+	  
+	    dirCheck();
 	
 	    new Thread(new Runnable() {
 		    public void run() {
@@ -158,7 +156,7 @@ public class MainActivity extends Activity {
 					out.write(buf, 0, len);
 				    }	
 				
-				    Log.i(MSG_TAG, "Wrote file "+targetFile.toString());
+				    Log.i(MSG_TAG, "Wrote new file "+targetFile.toString());
 				    in.close();
 				    out.close();
 				} else {

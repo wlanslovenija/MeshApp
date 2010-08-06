@@ -2,26 +2,24 @@
  *  guilib.h  *
 \*------------*/
 
+#define BUFSIZE 256
+
 /**
- * Definitions
+ * Global Variables
  */
 
-#define MAX_PATH_LENGTH 128
-#define SLEEP_DURATION 5
+const char *working_dir;
 
+const char *olsr_init_script_path;
+
+const char *olsr_kill_script_path;
 
 /**
  * Function Prototypes 
  */
 
-int init(const char *path);
+int init(const char *jni_path);
 
 int meshapp_start(void);
 
 int meshapp_stop(void);
-
-void generate_olsr_config_file(const char *cfg);
-
-void android_log_error(const char *m);
-
-void android_log_info(const char *m);

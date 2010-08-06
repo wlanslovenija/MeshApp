@@ -1,9 +1,6 @@
 #!/system/bin/sh
-
 LOCAL_DIR=/data/data/net.wlanlj.meshapp
 
 $LOCAL_DIR/bin/olsrd -nofork -f $LOCAL_DIR/tmp/olsrd.conf &
-
 echo "$!" > $LOCAL_DIR/tmp/olsrd.pid
-
 #EOF
