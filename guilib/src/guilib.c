@@ -1,96 +1,84 @@
-/*------------*\
- *  guilib.c  *
-\*------------*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
 
-#include "log.h"
-#include "config.h"
 #include "guilib.h"
-
-char olsr_config_buf[BUFSIZE];
-char olsr_lock_buf[BUFSIZE];
-char olsr_init_buf[BUFSIZE];
-char olsr_kill_buf[BUFSIZE];
-char olsr_bin_buf[BUFSIZE];
-
-char syscmd_start[BUFSIZE];
-char syscmd_stop[BUFSIZE];
-
-const char *olsr_bin_file_path;
+#include "config.h"
+#include "log.h"
 
 const char *root_cmd = "su -c ";
 
-mode_t exec_mode = S_ISUID | S_ISGID | S_ISVTX | S_IXUSR | S_IXUSR | S_IROTH | S_IXOTH;
-
 int init(const char *path)
 {
-  strcpy(olsr_bin_buf, path);
-  olsr_bin_file_path = strcat(olsr_bin_buf, "/bin/olsrd");
-  chmod(olsr_bin_file_path, exec_mode);
-  android_log_info(olsr_bin_file_path);
+  /**
+   * Set the file paths.
+   */
+  strcpy(platform_data_path, path);
+  set_file_path(olsr_start_script, olsr_start_script_name);
+  set_file_path(olsr_stop_script, olsr_stop_script_name);
+  set_file_path(olsr_config_file, olsr_config_file_name);
+  set_file_path(olsr_lock_file, olsr_lock_file_name);
+  set_file_path(olsr_bin_file, olsr_bin_file_name);
+  set_file_path(detect_adhoc_script, detect_adhoc_script_name);
+  set_file_path(create_adhoc_script, create_adhoc_script_name);
 
-  strcpy(olsr_init_buf, path);
-  olsr_init_script_path = strcat(olsr_init_buf, "/bin/olsrd_init");
-  chmod(olsr_init_script_path, exec_mode);
-  android_log_info(olsr_init_script_path);
-
-  strcpy(olsr_kill_buf, path);
-  olsr_kill_script_path = strcat(olsr_kill_buf, "/bin/olsrd_kill");
-  chmod(olsr_kill_script_path, exec_mode);
-  android_log_info(olsr_kill_script_path);
-
-  strcpy(olsr_config_buf, path);
-  olsr_config_file_path = strcat(olsr_config_buf, "/tmp/olsrd.conf"); 
-  android_log_info(olsr_config_file_path);
-
-  strcpy(olsr_lock_buf, path);
-  olsr_lock_file_path = strcat(olsr_lock_buf, "/tmp/olsrd.lock");
-  android_log_info(olsr_lock_file_path);
+  /**
+   * Make scripts and binaries executable.
+   */
+  mode_t exec_mode = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IXOTH;
+  
+  chmod(olsr_start_script, exec_mode);
+  chmod(olsr_stop_script, exec_mode);
+  chmod(olsr_bin_file, exec_mode);
+  chmod(detect_adhoc_script, exec_mode);
+  chmod(create_adhoc_script, exec_mode);
 
   return 0;
 }
 
 int meshapp_start()
 {
-  if (generate_olsr_config_file() == -1) {
-    android_log_error("failed to write olsrd.conf");
+  /**
+   * Configure the OLSR routing protocol.
+   */
+  if (configure_olsr_protocol() == -1) {
+    guilib_syslog(GUILIB_LOG_ERROR, "Error! Failed to write OLSR config file %s: %s", olsr_config_file_name, strerror(errno));
     return -1;
   }
-
-  android_log_info("wrote olsrd.conf");
-
-  strcpy(syscmd_start, root_cmd);
-  strcat(syscmd_start, olsr_init_script_path);
-  android_log_info(syscmd_start);
   
-  if (system(syscmd_start) != 0) {
-    android_log_error("failed to run olsrd");
+  guilib_syslog(GUILIB_LOG_INFO, "Wrote OLSR config file: %s", olsr_config_file);
+
+  /**
+   * Run the script to start the OLSR daemon.
+   */
+  strcpy(olsr_start_syscmd, root_cmd);
+  strcat(olsr_start_syscmd, olsr_start_script);
+  
+  if (system(olsr_start_syscmd) != 0) {
+    guilib_syslog(GUILIB_LOG_ERROR, "Error! \"%s\" returned non-zero exit status: %s", olsr_start_syscmd, strerror(errno));
     return -1;
   }
-
-    android_log_info("started olsrd");
-
-    return 0;
+  
+  guilib_syslog(GUILIB_LOG_INFO, "Command \"%s\" executed successfully.", olsr_start_syscmd);
+  return 0;
 }
-  
 
 int meshapp_stop()
 {
-  strcpy(syscmd_stop, root_cmd);
-  strcat(syscmd_stop, olsr_kill_script_path);
-  android_log_info(syscmd_stop);
 
-  if (system(syscmd_stop) != 0) {
-    android_log_error("failed to kill olsrd");
+  /**
+   * Run the script to stop the OLSR daemon.
+   */
+  strcpy(olsr_stop_syscmd, root_cmd);
+  strcat(olsr_stop_syscmd, olsr_stop_script);
+
+  if (system(olsr_stop_syscmd) != 0) {
+    guilib_syslog(GUILIB_LOG_ERROR, "Error! \"%s\" returned non-zero exit status: %s", olsr_stop_syscmd, strerror(errno));
     return -1;
   }
- 
-  android_log_info("killed olsrd"); 
- 
+  						\
+  guilib_syslog(GUILIB_LOG_INFO, "Command \"%s\" executed successfully.", olsr_stop_syscmd);
   return 0;
 }

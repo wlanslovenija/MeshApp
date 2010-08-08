@@ -1,19 +1,21 @@
-/*------------*\
- *  config.c  *
-\*------------*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
 #include "config.h"
+#include "log.h"
 
-int generate_olsr_config_file(void)
+char *set_file_path(char file_path[], const char *file_name)
 {
-  FILE *cnf = fopen(olsr_config_file_path, "w");
+  strcpy(file_path, platform_data_path);
+  file_path = strcat(file_path, file_name);
+  return file_path;
+}
 
-  wlan_interface = "tiwlan0";
+int configure_olsr_protocol(void)
+{
+  FILE *cnf = fopen(olsr_config_file, "w");
 
   if (cnf == NULL)
     return -1;
@@ -38,7 +40,17 @@ int generate_olsr_config_file(void)
 	    "Interface \"%s\"\n"
 	    "{\n"
 	    "\t Mode \"mesh\"\n"
-	    "}\n", olsr_lock_file_path, wlan_interface);
+	    "}\n", olsr_lock_file, "tiwlan0");
     fclose(cnf);
     return 0;
+}
+
+int detect_adhoc_network()
+{
+  return 0;
+}
+
+int configure_adhoc_network(adhoc_network network)
+{
+  return 0;
 }
