@@ -11,9 +11,12 @@ const char *olsr_config_file_name = "/tmp/olsrd.conf";
 
 const char *olsr_lock_file_name = "/tmp/olsrd.lock";
 
+const char *olsr_pid_file_name = "/tmp/olsrd.pid";
+
 const char *detect_adhoc_script_name = "/bin/detect_adhoc";
 
 const char *create_adhoc_script_name = "/bin/create_adhoc_network";
+
 /**
  * Initializes the platform-specific components to GuiLib.
  *
@@ -41,11 +44,9 @@ int meshapp_stop(void);
 
 
 /**
- * Cleans up files and exits the process cleanly.
- *
- * @return 0 on success, -1 on failure.
+ * Writes the output of %id to the syslog for debugging.
  */
+void get_uid(void);
 
-//int exit(void);
 
 #endif

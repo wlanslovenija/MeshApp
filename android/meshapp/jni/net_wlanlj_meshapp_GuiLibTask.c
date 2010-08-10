@@ -34,4 +34,3 @@ JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_stop
 {
   return meshapp_stop();
 }
-

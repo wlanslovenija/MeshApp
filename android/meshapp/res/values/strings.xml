@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="global_application_name">MeshApp</string>
-	<string name="olsr_controller"> Start/Stop the OLSR Daemon.</string>
-	<string name="start_olsrd">- Press to start OLSRD. -</string> 
-	<string name="stop_olsrd">- Press to stop OLSRD. -</string> 
+	<string name="olsr_controller"> Start/Stop MeshApp </string>
+	<string name="start_olsrd">- Press to start -</string> 
+	<string name="stop_olsrd">- Press to stop -</string>
+	<string name="permlabel_wpaSupplicantPermission">access wpa_supplicant as a client</string>
+	<string name="permdesc_wpaSupplicantPermission">Allows the application to access wpa_supplicant as a client.</string>
+
 </resources>

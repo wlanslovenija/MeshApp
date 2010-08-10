@@ -13,23 +13,13 @@ char olsr_config_file[BUFSIZE];
 
 char olsr_lock_file[BUFSIZE];
 
+char olsr_pid_file[BUFSIZE];
+
 char olsr_bin_file[BUFSIZE];
-
-char detect_adhoc_script[BUFSIZE];
-
-char create_adhoc_script[BUFSIZE];
 
 char olsr_start_syscmd[BUFSIZE];
 
 char olsr_stop_syscmd[BUFSIZE];
-
-typedef struct adhoc_network {
-  char ssid[32];
-  char bssid[18];
-  char key_mgnt[8];
-  int priority;
-  int mode;
-} adhoc_network;
 
 /**
  * Sets platform-specific absolute paths of files needed by GuiLib.
@@ -40,7 +30,7 @@ typedef struct adhoc_network {
  *
  * @return the absolute path of the file, stored in path_buf.
  */
-char *set_file_path(char path_buf[], const char *file_name); 
+char *set_file_path(char buf[], const char *file); 
 
 
 /**
@@ -66,6 +56,6 @@ int detect_adhoc_network(void);
  *
  * @return 0 on success, -1 on failure.
  */
-int configure_adhoc_network(adhoc_network network);
+int create_adhoc_network(void);
 
 #endif
