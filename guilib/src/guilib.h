@@ -13,9 +13,9 @@ const char *olsr_lock_file_name = "/tmp/olsrd.lock";
 
 const char *olsr_pid_file_name = "/tmp/olsrd.pid";
 
-const char *detect_adhoc_script_name = "/bin/detect_adhoc";
+const char *wificonfig_bin_file_name = "/bin/wificonfig";
 
-const char *create_adhoc_script_name = "/bin/create_adhoc_network";
+const char *scan_results_file_name = "/tmp/scan_results.log";
 
 /**
  * Initializes the platform-specific components to GuiLib.
@@ -24,24 +24,47 @@ const char *create_adhoc_script_name = "/bin/create_adhoc_network";
  *
  * @return 0 on success, < 0 on failure.
  */
-int init(const char *path);
-
+int guilib_init(const char *path);
 
 /**
- * Platform interface for starting MeshApp functionality provided by GuiLib.
+ * High level controller for guilib.
  *
  * @return 0 on success, < 0 on failure.
  */
-int meshapp_start(void);
-
+int guilib_start(void);
 
 /**
  * Platform interface for stopping MeshApp functionality provided by GuiLib.
  *
  * @return 0 on success, < 0 on failure.
  */
-int meshapp_stop(void);
+int guilib_stop(void);
 
+/**
+ * Run the wificonfig program to scan for ad-hoc networks.
+ *
+ * @return number of detected ad-hoc networks on success, < 0 on failure.
+ */
+int wifi_scan(void);
+
+/**
+ * Start the OLSR daemon.
+ *
+ * @return 0 on success, < 0 on failure.
+ */
+int olsrd_start(void);
+
+/**
+ * Stop the OLSR daemon.
+ *
+ * @return 0 on success, < 0 on failure.
+ */
+int olsrd_stop(void);
+
+/**
+ * Remove temporary files created by guilib.
+ */
+void clean_temp_files(char *file_path);
 
 /**
  * Writes the output of %id to the syslog for debugging.

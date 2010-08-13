@@ -26,11 +26,11 @@ JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_init
 JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_start
 (JNIEnv *env, jclass class)
 {
-  return meshapp_start();
+  return guilib_start();
 }
 
 JNIEXPORT jint JNICALL Java_net_wlanlj_meshapp_GuiLibTask_stop
 (JNIEnv *env, jclass class)
 {
-  return meshapp_stop();
+  return guilib_stop();
 }
