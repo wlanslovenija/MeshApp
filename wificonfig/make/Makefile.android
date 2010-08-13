@@ -6,8 +6,11 @@ NDK = /opt/android-ndk-r4b
 
 NDK_ARCH = $(NDK)/build/platforms/android-3/arch-arm
 
-COMMON_CFLAGS := \
-	-I$(NDK_ARCH)/usr/include \
+LOCAL_PATH := $(shell pwd)
+
+CPPFLAGS += -DANDROID
+
+CPPFLAGS += \
 	-march=armv5te -mtune=xscale \
 	-msoft-float -fpic \
 	-mthumb-interwork \
@@ -16,33 +19,13 @@ COMMON_CFLAGS := \
 	-fstack-protector \
 	-fno-short-enums \
 	-D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ \
-	-D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ \
+	-D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__
 
-GUILIB_CFLAGS := \
-	-Wall \
-	-DANDROID
-
-ARM_RELEASE_CFLAGS := \
-	-O2 \
+CPPFLAGS += \
 	-fomit-frame-pointer \
 	-fstrict-aliasing \
 	-funswitch-loops \
 	-finline-limit=300
-
-THUMB_RELEASE_CFLAGS := \
-	-mthumb \
-	-Os \
-	-fomit-frame-pointer \
-	-fno-strict-aliasing \
-	-finline-limit=64
-
-ARM_DEBUG_CFLAGS := $(ARM_RELEASE_CFLAGS) \
-	-fno-omit-frame-pointer \
-	-fno-strict-aliasing
-
-THUMB_DEBUG_CFLAGS := $(THUMB_RELEASE_CFLAGS) \
-	-marm \
-	-fno-omit-frame-pointer
 
 #--------------------------#
 #  Cross-Compile with NDK  #
@@ -57,14 +40,23 @@ TOOLCHAIN_NAME = arm-eabi-4.2.1
 TOOLCHAIN_PREFIX = $(HOST_PREBUILT)/$(TOOLCHAIN_NAME)/bin/arm-eabi-
 
 CC = $(TOOLCHAIN_PREFIX)gcc
-AR = $(TOOLCHAIN_PREFIX)ar
+LD = $(TOOLCHAIN_PREFIX)ld
 
-CFLAGS += $(COMMON_CFLAGS)
-CFLAGS += $(GUILIB_CFLAGS)
-CFLAGS += $(ARM_DEBUG_CFLAGS)
-CFLAGS += $(THUMB_DEBUG_CFLAGS)
+CFLAGS += -I$(NDK_ARCH)/usr/include
 
-ARFLAGS := crs
+LDFLAGS += -nostartfiles -nodefaultlibs -nostdlib -Bdynamic
+LDFLAGS += -Wl,--dynamic-linker -Wl,/system/bin/linker
+LDFLAGS += -L$(LOCAL_PATH)/lib
+LDFLAGS += -Wl,-rpath-link -Wl,$(LOCAL_PATH)/lib
+LDFLAGS += -lwpa_client -lcutils
+LDFLAGS += -L$(NDK_ARCH)/usr/lib
+LDFLAGS += -Wl,-rpath-link -Wl,$(NDK_ARCH)/usr/lib
+LDFLAGS += -llog
+LDFLAGS += $(NDK_ARCH)/usr/lib/crtbegin_dynamic.o
+
+LIBS += -Wl,-lc -Wl,-lgcc
+LIBS += $(NDK_ARCH)/usr/lib/crtend_android.o
+
 
 # Local Variables:
 # mode: makefile

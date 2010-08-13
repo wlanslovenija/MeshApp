@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.AssetManager;
 import android.net.wifi.WifiConfiguration;
@@ -36,6 +37,8 @@ public class MainActivity extends Activity {
     public static final String MSG_TAG = "MainActivity ";
 
     public String DATA_PATH = "/data/data/net.wlanlj.meshapp";
+    
+    public AssetManager assetManager;
 
     public boolean isMeshActive = false;
 
@@ -44,13 +47,15 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-	
-	if (!isInstalled) {
-	    install();
-	}
+        setContentView(R.layout.main);    
 
 	displayToastMessage("MeshApp-0.5-test");
+	
+	Log.i(MSG_TAG, "Checking permissions...");
+	permCheck("android.permission.CHANGE_WIFI_STATE");
+	permCheck("net.wlanlj.meshapp.permission.WPA_SUPPLICANT_CLIENT");
+	Log.i(MSG_TAG, "Checking files...");
+	install();
 	
 	Button button = (Button)findViewById(R.id.start);
         button.setOnClickListener(startMeshListener);
@@ -110,8 +115,26 @@ public class MainActivity extends Activity {
 	}
     }
     
-	public void dirCheck() {
+    public void permCheck(String permName) {
+	
+	try {
+	    PackageManager pm = getPackageManager();
+	    if (pm.checkPermission(permName, "net.wlanlj.meshapp") == 0) {
+		Log.i(MSG_TAG, "has permission "+permName+": true.");
+	    } else {
+		Log.e(MSG_TAG, "has permission "+permName+": false.");
+	    }
 
+	    for (int i : pm.getPackageGids("net.wlanlj.meshapp")) {
+		    Log.i(MSG_TAG, "net.wlanlj.meshapp: assigned to gid "+i);
+		}
+	} catch (Exception ex) {
+	    Log.e(MSG_TAG, "Error! "+ex.getMessage());
+	}
+    }
+
+    public void dirCheck() {
+	
 	/* Store the subdirectories we want under DATA_PATH in an array. */
 	String[] dirs = {"/lib", "/bin", "/tmp"};
 	
@@ -131,53 +154,65 @@ public class MainActivity extends Activity {
     
 
     public void install() {
-	  
-	dirCheck();
-	
-	new Thread(new Runnable() {
-		public void run() {
-		    
-		    try {
-			/* Instantiate an AM and store a list files under /assets/bin in an array. */
-			AssetManager assetManager = getAssets();
-			String[] sourceFiles = assetManager.list("bin");
 
-			for (String src : sourceFiles) {
-			    File targetFile = new File(DATA_PATH+"/bin", src);
-			    
-			    /* If the target file does not exist, create a copy from the bundled asset. */
-			    if (!targetFile.exists()) {
-				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(targetFile));
-				BufferedInputStream in = new BufferedInputStream(assetManager.open("bin/"+src, 2));	
-				
-				int len; 
-				byte[] buf = new byte[1024];
-				
-				while((len = in.read(buf)) != -1) {
-				    out.write(buf, 0, len);
-				}	
-				
-				Log.i(MSG_TAG, "Wrote new file "+targetFile.toString());
-				in.close();
-				out.close();
-			    } else {
-				Log.i(MSG_TAG, src+": is already installed.");
-			    }
-			}
-			
-		    } catch (IOException io) {
-			Log.e(MSG_TAG, "Error! Install failed.");
-			Log.e(MSG_TAG, io.getMessage());
-		    } catch (Exception ex) {
-			Log.e(MSG_TAG, "Error! Install failed.");
-			Log.e(MSG_TAG, ex.getMessage());
-		    }
-		}	    
-	    }).start();	    
+	try {
+	    
+	    assetManager = getAssets();
+	    String[] binFiles = assetManager.list("bin");
+	    //	    String[] libFiles = assetManager.list("lib");
+	    
+	    dirCheck();
+	    writeFiles(binFiles, "bin");
+	    //    writeFiles(libFiles, "lib");
+
+	} catch (IOException io) {
+	    Log.e(MSG_TAG, "Error! Install failed.");
+	    Log.e(MSG_TAG, io.getMessage());
+	}
 	isInstalled = true;
 	displayToastMessage("MeshApp is installed!");
     }
 
+    public void writeFiles(String[] sourceFiles, String sourceDirectoryName) {
+
+	try {
+	    
+	    for (String src : sourceFiles) {
+		
+		File targetDirectory = new File(DATA_PATH+'/'+sourceDirectoryName);
+		File targetFile = new File(targetDirectory, src);
+
+		File sourceFile = new File(sourceDirectoryName, src);
+		
+		/* If the target file does not exist, create a copy from the bundled asset. */
+		if (!targetFile.exists()) {
+		    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(targetFile));
+		    BufferedInputStream in = new BufferedInputStream(assetManager.open(sourceFile.toString(), 2));	
+		    
+		    int len; 
+		    byte[] buf = new byte[1024];
+		    
+		    while((len = in.read(buf)) != -1) {
+			out.write(buf, 0, len);
+		    }	
+		    
+		    Log.i(MSG_TAG, "Wrote new file "+targetFile.toString());
+		    in.close();
+		    out.close();
+		} else {
+		    Log.i(MSG_TAG, src+": is already installed.");
+		}
+	    }
+	    
+	} catch (IOException io) {
+	    Log.e(MSG_TAG, "Error! Install failed.");
+	    Log.e(MSG_TAG, io.getMessage());
+	} catch (Exception ex) {
+	    Log.e(MSG_TAG, "Error! Install failed.");
+	    Log.e(MSG_TAG, ex.getMessage());
+	}
+    }	        
+    
     public void displayToastMessage(String message) {
 	Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }

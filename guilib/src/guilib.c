@@ -43,12 +43,6 @@ int meshapp_start()
 {
 
   /**
-   * Scan for ad-hoc networks.
-   */
-  wpa_open_control_connection("/data/misc/wifi/sockets");
-  wpa_print_scan_results();
-  
-  /**
    * Configure the OLSR routing protocol.
    */
   if (configure_olsr_protocol() == -1) {

@@ -40,22 +40,4 @@ char *set_file_path(char buf[], const char *file);
  */
 int configure_olsr_protocol(void);
 
-
-/**
- * Scans for wireless ad-hoc networks.
- *
- * @return The number of detected ad-hoc networks if any are available, -1 otherwise.
- */
-int detect_adhoc_network(void);
-
-
-/**
- * Creates an ad-hoc network.
- *
- * @param adhoc_network is the structure defining the network to create.
- *
- * @return 0 on success, -1 on failure.
- */
-int create_adhoc_network(void);
-
 #endif
