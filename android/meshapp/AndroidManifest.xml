@@ -3,26 +3,9 @@
 	  package="net.wlanlj.meshapp"
 	  android:versionCode="1"
 	  android:versionName="0.5-test">
-  <permission android:name="net.wlanlj.meshapp.permission.WPA_SUPPLICANT_CLIENT"
-	      android:label="@string/permlabel_wpaSupplicantPermission"
-	      android:description="@string/permdesc_wpaSupplicantPermission"
-	      android:permissionGroup="android.permission-group.NETWORK"
-	      android:protectionLevel="signature"/>
-  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
-  <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-  <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
-  <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
-  <uses-permission android:name="android.permission.WRITE_SETTINGS"></uses-permission>
-  <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-<!--  <uses-permission android:name="net.wlanlj.meshapp.permission.WPA_SUPPLICANT_CLIENT"></uses-permission> -->
-  <uses-sdk android:minSdkVersion="1" />
-  <application android:label="@string/global_application_name"
+  <application android:label="@string/mesh_app"
 	       android:debuggable="true" >
-    <activity android:name=".MainActivity"
-	      android:label="@string/global_application_name"
-	      android:configChanges="orientation|keyboardHidden"
-	      android:screenOrientation="portrait" 
+    <activity android:name=".MeshActivity"
 	      android:launchMode="singleTask" >
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -30,4 +13,10 @@
       </intent-filter>
     </activity>
   </application>
+  <uses-sdk android:minSdkVersion="3" />
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+  <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+  <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"></uses-permission>
+  <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest> 

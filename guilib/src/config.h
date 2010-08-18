@@ -5,6 +5,10 @@
 
 char platform_data_path[BUFSIZE];
 
+/**
+ * OLSR files
+ */
+
 char olsr_start_script[BUFSIZE];
 
 char olsr_stop_script[BUFSIZE];
@@ -21,11 +25,15 @@ char olsr_start_syscmd[BUFSIZE];
 
 char olsr_stop_syscmd[BUFSIZE];
 
+/**
+ * wificonfig files
+ */
+
 char wificonfig_bin_file[BUFSIZE];
 
-char scan_results_file[BUFSIZE];
+char wifi_scan_script[BUFSIZE];
 
-char wificonfig_syscmd[BUFSIZE];
+char wifi_scan_syscmd[BUFSIZE];
 
 /**
  * Sets platform-specific absolute paths of files needed by GuiLib.

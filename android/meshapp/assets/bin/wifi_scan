@@ -1,0 +1,22 @@
+#!/system/bin/sh
+set -e
+
+BIN_LOCAL=/data/data/net.wlanlj.meshapp/bin
+
+iface=$(getprop wifi.interface)
+net_id=$($BIN_LOCAL/wificonfig $iface "ADD_NETWORK")
+
+SSID="open.wlan-lj.net"
+BSSID="02:ca:ff:ee:ba:be"
+
+$BIN_LOCAL/wificonfig $iface "SET_NETWORK $net_id mode 1"
+$BIN_LOCAL/wificonfig $iface "SET_NETWORK $net_id ssid \"$SSID\""
+$BIN_LOCAL/wificonfig $iface "SET_NETWORK $net_id bssid $BSSID"
+$BIN_LOCAL/wificonfig $iface "SET_NETWORK $net_id frequency 2447"
+$BIN_LOCAL/wificonfig $iface "SET_NETWORK $net_id key_mgmt NONE"
+
+$BIN_LOCAL/wificonfig $iface "AP_SCAN 2"
+$BIN_LOCAL/wificonfig $iface "SELECT_NETWORK $net_id"
+
+ifconfig "$iface" 10.253.132.166 netmask 255.0.0.0 broadcast 10.255.255.255
+#EOF

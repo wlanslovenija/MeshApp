@@ -30,19 +30,16 @@ int init(const char *path)
   set_file_path(olsr_lock_file, olsr_lock_file_name);
   set_file_path(olsr_bin_file, olsr_bin_file_name);
   set_file_path(wificonfig_bin_file, wificonfig_bin_file_name);
-  
+  set_file_path(wifi_scan_script, wifi_scan_script_name);
+
   /**
    * Set executable permissions.
    */
   chmod(olsr_start_script, exec_mode);
   chmod(olsr_stop_script, exec_mode);
   chmod(olsr_bin_file, exec_mode);
+  chmod(wifi_scan_script, exec_mode);
   chmod(wificonfig_bin_file, exec_mode);
-
-  /**
-   * Print some debugging information.
-   */
-  get_uid();
   
   return 0;
 }
@@ -54,7 +51,7 @@ int guilib_start(void)
   /**
    * Scan for wireless ad-hoc networks, start olsrd on successful completion.
    */
-  if (wifi_scan() != 0)
+  if (wifi_config() != 0)
     return -1;
 
   if (olsrd_start() != 0)
@@ -84,21 +81,21 @@ int guilib_stop(void)
   return 0;
 }
 
-int wifi_scan(void)
+int wifi_config(void)
 {
  /**
    * Scan for wireless ad-hoc networks.
    */
-  strcpy(wificonfig_syscmd, root_cmd);
-  strcat(wificonfig_syscmd, wificonfig_bin_file);
+  strcpy(wifi_scan_syscmd, root_cmd);
+  strcat(wifi_scan_syscmd, wifi_scan_script);
 
-  if (system(wificonfig_syscmd) != 0) {
-    guilib_syslog(GUILIB_LOG_ERROR, "Error \"%s\" returned non-zero exit status: %s", wificonfig_syscmd, strerror(errno));
+  if (system(wifi_scan_syscmd) != 0) {
+    guilib_syslog(GUILIB_LOG_ERROR, "Error \"%s\" returned non-zero exit status: %s", wifi_scan_syscmd, strerror(errno));
     guilib_syslog(GUILIB_LOG_ERROR, "Error! Wifi scan failed!");
     return -1;
   }
 
-  guilib_syslog(GUILIB_LOG_INFO, "Command \"%s\" executed successfully.", wificonfig_syscmd);
+  guilib_syslog(GUILIB_LOG_INFO, "Command \"%s\" executed successfully.", wifi_scan_syscmd);
   guilib_syslog(GUILIB_LOG_INFO, "Scanning for ad-hoc networks...");
   
   return 0;
@@ -156,23 +153,4 @@ void clean_temp_files(char *file_path) {
     guilib_syslog(GUILIB_LOG_INFO, "Removed temporary file \"%s\"", file_path);
  
   return;
-}
-
-
-void get_uid()
-{
-  FILE *id;
-  char line[BUFSIZE];
-
-  id = popen("/system/bin/id", "r");
-
-  if (id != NULL) {
-    while (fgets(line, sizeof(line), id)) {
-      guilib_syslog(GUILIB_LOG_INFO, "id: %s", line);
-    }
-    pclose(id);
-  } else {
-    guilib_syslog(GUILIB_LOG_ERROR, "Error! Failed to open pipe: %s", strerror(errno));
-  }
-  return;    
 }

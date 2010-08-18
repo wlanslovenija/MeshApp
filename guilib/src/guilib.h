@@ -1,6 +1,9 @@
 #ifndef _GUILIB_H
 #define _GUILIB_H
 
+/**
+ * OLSR file names
+ */
 const char *olsr_start_script_name = "/bin/olsr_start";
 
 const char *olsr_stop_script_name = "/bin/olsr_stop";
@@ -13,9 +16,13 @@ const char *olsr_lock_file_name = "/tmp/olsrd.lock";
 
 const char *olsr_pid_file_name = "/tmp/olsrd.pid";
 
+/**
+ * wificonfig file names
+ */
+
 const char *wificonfig_bin_file_name = "/bin/wificonfig";
 
-const char *scan_results_file_name = "/tmp/scan_results.log";
+const char *wifi_scan_script_name = "/bin/wifi_scan";
 
 /**
  * Initializes the platform-specific components to GuiLib.
@@ -65,11 +72,5 @@ int olsrd_stop(void);
  * Remove temporary files created by guilib.
  */
 void clean_temp_files(char *file_path);
-
-/**
- * Writes the output of %id to the syslog for debugging.
- */
-void get_uid(void);
-
 
 #endif
