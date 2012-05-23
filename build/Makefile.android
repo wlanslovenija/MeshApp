@@ -1,0 +1,33 @@
+
+.PHONY: all toolchain clean uberclean
+
+
+PREFIX = ./android/build.tmp
+
+API_LEVEL = android-8
+
+NDK_PATH = /opt/android/ndk
+TOOLCHAIN_SCRIPT = $(NDK_PATH)/build/tools/make-standalone-toolchain.sh
+
+TOOLCHAIN_PATH = ./android/toolchain/$(API_LEVEL)
+SYSROOT = $(TOOLCHAIN_PATH)/sysroot
+
+CC = $(TOOLCHAIN_PATH)/bin/arm-linux-androideabi-gcc
+AR = $(TOOLCHAIN_PATH)/bin/arm-linux-androideabi-ar
+LD = $(TOOLCHAIN_PATH)/bin/arm-linux-androideabi-ld
+STRIP = $(TOOLCHAIN_PATH)/bin/arm-linux-androideabi-strip
+
+CPPFLAGS +=	-I$(SYSROOT)/usr/include
+
+all: toolchain
+
+toolchain: $(TOOLCHAIN_PATH)
+
+$(INSTALL_PATH):
+	$(TOOLCHAIN_SCRIPT) --platform=$(API_LEVEL) --install-dir=$(TOOLCHAIN_PATH)
+
+clean:
+	rm -rf ./android/toolchain/$(API_LEVEL)
+
+uberclean: clean
+	rm -rf ./android

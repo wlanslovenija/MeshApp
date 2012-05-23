@@ -1,3 +1,6 @@
 [submodule "src/modules/olsr/olsrd"]
 	path = src/modules/olsr/olsrd
 	url = git://olsr.org/olsrd.git
+[submodule "src/common/contrib/ahcp/ahcpd"]
+	path = src/common/contrib/ahcp/ahcpd
+	url = git://github.com/jech/ahcpd.git

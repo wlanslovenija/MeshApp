@@ -9,7 +9,6 @@
 #include "log.h"
 
 #include "wpa_ctrl.h"
-#include "wifi_config.h"
 
 static struct wpa_ctrl *control_connection = NULL;
 
